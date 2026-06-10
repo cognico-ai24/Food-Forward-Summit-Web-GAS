@@ -46,6 +46,9 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
   // Seeded UUID Lookup for helpful demonstration purposes (representing the user's uploaded CSVs)
   const sampleCredentials = {
+    admin: [
+      { id: "admin", name: "System Admin", email: "admin@nleats.com", title: "Milano Summit Core Administrator" }
+    ],
     exhibitors: [
       { id: "feb8a00c-839e-4412-80c8-2e76765a1014", name: "CogniCo (Sponsor)", code: "feb8a00c..." },
       { id: "f4f09cb2-c7c0-49c0-b776-225ee4155cdb", name: "Food Forward", code: "f4f09cb2..." },
@@ -59,10 +62,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     ]
   };
 
-  const handleCopy = (id: string) => {
+  const handleCopy = (id: string, prefEmail?: string) => {
     navigator.clipboard.writeText(id);
     setCopiedId(id);
     setUuid(id); // Auto-populate inside UUID field
+    if (prefEmail) {
+      setEmail(prefEmail);
+    }
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -377,6 +383,38 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               <p className="text-[9.5px] text-slate-400 font-semibold leading-relaxed mb-4">
                 Click any pre-registered ID below. It will automatically populate the credential block for instant testing.
               </p>
+
+              {/* SECTION 0: ADMINISTRATORS */}
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-1">
+                  <ShieldCheck size={10} className="text-[#00e1ef]" />
+                  <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
+                    System Administrators
+                  </h4>
+                </div>
+                <div className="space-y-1.5">
+                  {sampleCredentials.admin.map((adm) => (
+                    <div 
+                      key={adm.id}
+                      onClick={() => handleCopy(adm.id, adm.email)}
+                      className="p-2 border border-slate-800 hover:border-[#00e1ef]/40 hover:bg-[#0a2330] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                    >
+                      <div className="truncate pr-2">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#00e1ef]">
+                          {adm.name} ({adm.email})
+                        </span>
+                        <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
+                          {adm.title}
+                        </span>
+                      </div>
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#0d2a37] text-white/80 rounded-md group-hover:bg-[#00e1ef] group-hover:text-[#030e14] transition shrink-0 flex items-center gap-1">
+                        {copiedId === adm.id ? <Check size={8} /> : <Copy size={8} />}
+                        <span>Select</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* SECTION 1: SPEAKERS */}
               <div className="space-y-2 mb-4">

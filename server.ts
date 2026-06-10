@@ -226,6 +226,30 @@ app.post("/api/auth", (req, res) => {
   const db = loadDatabase();
   const searchUuid = uuid.trim().toLowerCase();
 
+  // Explicit check for System Admin
+  const reqEmail = email ? email.trim().toLowerCase() : "";
+  if (reqEmail === "admin@nleats.com" || searchUuid === "admin") {
+    if (searchUuid !== "admin") {
+      return res.status(401).json({
+        error: "Admin email requires 'admin' as the Unique ID."
+      });
+    }
+    return res.json({
+      authenticated: true,
+      role: "Admin",
+      userId: "admin",
+      email: "admin@nleats.com",
+      displayName: "System Admin",
+      profile: {
+        id: "admin",
+        fullName: "System Admin",
+        email: "admin@nleats.com",
+        bio: "System Administrator for Food Forward Milano Summit 2026 Admin Panel.",
+        location: "System Console"
+      }
+    });
+  }
+
   // 1. Search for matching Speaker ID
   const speaker = db.speakers.find(s => s.id.toLowerCase() === searchUuid);
   if (speaker) {
