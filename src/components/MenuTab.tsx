@@ -26,7 +26,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { ScannedContact } from "../types";
-import { attendeesList } from "../data";
+import { attendeesList, speakersList, exhibitorsList } from "../data";
 
 interface MenuTabProps {
   currentUserRole: string;
@@ -89,13 +89,17 @@ export default function MenuTab({
         });
         setSyncStatus("success");
       } else if (currentUserRole === "Speaker") {
-        const response = await fetch("/api/speakers");
-        if (response.ok) {
-          const list = await response.json();
-          const found = list.find((s: any) => 
+        try {
+          const response = await fetch("/api/speakers");
+          let list = null;
+          if (response.ok) {
+            list = await response.json().catch(() => null);
+          }
+          const activeList = (Array.isArray(list) && list.length > 0) ? list : speakersList;
+          const found = activeList.find((s: any) => 
             s.id?.toLowerCase() === idToMatch?.toLowerCase() || 
             s.email?.toLowerCase() === emailToMatch?.toLowerCase()
-          ) || list[0];
+          ) || activeList[0];
           
           if (found) {
             setProfileData({
@@ -113,18 +117,43 @@ export default function MenuTab({
           } else {
             setSyncStatus("none");
           }
-        } else {
-          setSyncStatus("none");
+        } catch (err) {
+          console.error("Failed speaker list sync, falling back", err);
+          const activeList = speakersList;
+          const found = activeList.find((s: any) => 
+            s.id?.toLowerCase() === idToMatch?.toLowerCase() || 
+            s.email?.toLowerCase() === emailToMatch?.toLowerCase()
+          ) || activeList[0];
+          if (found) {
+            setProfileData({
+              fullName: found.fullName,
+              email: found.email,
+              topicTitle: found.topicTitle,
+              bio: found.bio,
+              location: found.location || "Hall A (Main Stage)",
+              linkedinUrl: found.linkedinUrl,
+              sessionFormat: found.sessionFormat,
+              role: "Speaker",
+              id: found.id
+            });
+            setSyncStatus("success");
+          } else {
+            setSyncStatus("none");
+          }
         }
       } else if (currentUserRole === "Exhibitor" || currentUserRole === "Sponsor") {
-        const response = await fetch("/api/exhibitors");
-        if (response.ok) {
-          const list = await response.json();
-          const found = list.find((e: any) => 
+        try {
+          const response = await fetch("/api/exhibitors");
+          let list = null;
+          if (response.ok) {
+            list = await response.json().catch(() => null);
+          }
+          const activeList = (Array.isArray(list) && list.length > 0) ? list : exhibitorsList;
+          const found = (activeList.find((e: any) => 
             e.id?.toLowerCase() === idToMatch?.toLowerCase() || 
             e.email?.toLowerCase() === emailToMatch?.toLowerCase() ||
-            e.contactEmail?.toLowerCase() === emailToMatch?.toLowerCase()
-          ) || list[0];
+            (e.contactEmail && e.contactEmail.toLowerCase() === emailToMatch?.toLowerCase())
+          ) || activeList[0]) as any;
           
           if (found) {
             setProfileData({
@@ -141,8 +170,29 @@ export default function MenuTab({
           } else {
             setSyncStatus("none");
           }
-        } else {
-          setSyncStatus("none");
+        } catch (err) {
+          console.error("Failed exhibitor list sync, falling back", err);
+          const activeList = exhibitorsList;
+          const found = (activeList.find((e: any) => 
+            e.id?.toLowerCase() === idToMatch?.toLowerCase() || 
+            e.email?.toLowerCase() === emailToMatch?.toLowerCase() ||
+            (e.contactEmail && e.contactEmail.toLowerCase() === emailToMatch?.toLowerCase())
+          ) || activeList[0]) as any;
+          if (found) {
+            setProfileData({
+              fullName: found.name || found.displayName || "Exhibitor Host",
+              email: found.contactEmail || found.email || emailToMatch,
+              companyDescription: found.description || found.companyDescription || "Sustainable agrifood startup",
+              websiteUrl: found.website || found.websiteUrl,
+              location: found.boothLocation || found.location || "Booth B-05",
+              role: currentUserRole,
+              id: found.id,
+              primarySectors: found.track || found.primarySectors || "Sustainability & Auto-scaling"
+            });
+            setSyncStatus("success");
+          } else {
+            setSyncStatus("none");
+          }
         }
       } else {
         // Attendee
@@ -222,17 +272,28 @@ export default function MenuTab({
   useEffect(() => {
     const fetchSpeakerProfile = async () => {
       try {
-        const response = await fetch("/api/speakers");
-        if (response.ok) {
-          const list = await response.json();
-          const found = list.find((s: any) => s.id === selectedSpeakerId);
-          if (found) {
-            setEditorBio(found.bio || "");
-            setEditorTopic(found.topicTitle || "");
+        const response = await fetch("/api/speakers").catch(() => null);
+        let list = null;
+        if (response && response.ok) {
+          const data = await response.json().catch(() => null);
+          if (Array.isArray(data)) {
+            list = data;
           }
         }
+        
+        const activeList = (list && list.length > 0) ? list : speakersList;
+        const found = activeList.find((s: any) => s.id === selectedSpeakerId);
+        if (found) {
+          setEditorBio(found.bio || "");
+          setEditorTopic(found.topicTitle || "");
+        }
       } catch (e) {
-        console.error("Failed to sync CMS database details");
+        console.error("Failed to sync CMS database details", e);
+        const found = speakersList.find((s: any) => s.id === selectedSpeakerId);
+        if (found) {
+          setEditorBio(found.bio || "");
+          setEditorTopic(found.topicTitle || "");
+        }
       }
     };
     fetchSpeakerProfile();

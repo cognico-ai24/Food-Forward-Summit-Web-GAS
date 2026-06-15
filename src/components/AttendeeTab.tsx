@@ -261,7 +261,7 @@ export default function AttendeeTab() {
       {/* 5. SCROLLABLE ROSTER / DIRECTORY */}
       <div className="flex-grow overflow-y-auto pr-0.5 space-y-2.5 scrollbar-thin">
         {filteredAttendees.length > 0 ? (
-          filteredAttendees.map((att) => (
+          filteredAttendees.map((att, idx) => (
             <motion.div
               key={att.id}
               className="bg-white border border-slate-200/50 rounded-2xl p-3.5 shadow-sm text-left flex flex-col gap-2.5"
@@ -277,7 +277,14 @@ export default function AttendeeTab() {
                   <div>
                     <h3 className="text-xs font-black text-slate-900">{att.displayName}</h3>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[7px] font-black uppercase tracking-wider bg-emerald-900 text-white px-1.5 py-0.5 rounded-md">
+                      <span 
+                        className={`text-[7px] font-black uppercase tracking-wider text-white px-1.5 py-0.5 rounded-md ${
+                          idx === 0 ? "bg-[#21c3ce]" : idx === 1 ? "bg-[#c85a3c]" : "bg-[#0e8bd0]"
+                        }`}
+                        style={{
+                          backgroundColor: idx === 0 ? "#21c3ce" : idx === 1 ? "#c85a3c" : undefined
+                        }}
+                      >
                         {att.role}
                       </span>
                       <span className="text-[9px] text-slate-400 font-bold flex items-center gap-0.5">

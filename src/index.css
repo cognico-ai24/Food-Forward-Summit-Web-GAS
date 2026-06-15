@@ -8,44 +8,44 @@
 
 /* Premium dark-theme variables & visual overrides block */
 .dark-theme {
-  background-color: #0d1216 !important;
+  background-color: #060d17 !important;
   color: #f1f5f9 !important;
 }
 
-/* Override standard slate light backgrounds to clean deep slate/zinc shades */
+/* Override standard slate light backgrounds to clean deep slate/zinc/authoritative blue shades */
 .dark-theme .bg-white {
-  background-color: #12181f !important;
+  background-color: #0d1726 !important;
   color: #f8fafc !important;
 }
 
 .dark-theme .bg-\[\#f0f2f5\] {
-  background-color: #0c1115 !important;
+  background-color: #060d17 !important;
 }
 
 .dark-theme .bg-slate-50,
 .dark-theme .bg-slate-50\/50,
 .dark-theme .bg-slate-100 {
-  background-color: #16202a !important;
+  background-color: #112033 !important;
   color: #e2e8f0 !important;
 }
 
 .dark-theme .bg-slate-100\/60,
 .dark-theme .bg-slate-50\/40 {
-  background-color: #18232e !important;
+  background-color: #14273d !important;
 }
 
 /* Interactive elements */
 .dark-theme input,
 .dark-theme textarea,
 .dark-theme select {
-  background-color: #1a2430 !important;
+  background-color: #111d2e !important;
   color: #f8fafc !important;
-  border-color: #2e3e52 !important;
+  border-color: #1c2e42 !important;
 }
 
 .dark-theme input::placeholder,
 .dark-theme textarea::placeholder {
-  color: #64748b !important;
+  color: #475569 !important;
 }
 
 /* Card titles and heavy contrasts */
@@ -65,7 +65,7 @@
 
 .dark-theme .text-slate-500,
 .dark-theme .text-slate-400 {
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 
 /* Borders and dividers */
@@ -76,7 +76,7 @@
 .dark-theme .border-slate-200\/80,
 .dark-theme .border-slate-150,
 .dark-theme .border-slate-100 {
-  border-color: #1e293b !important;
+  border-color: #1c2e42 !important;
 }
 
 /* Broadcast elements styling in dark mode */
@@ -139,14 +139,14 @@
 
 /* Header & bottom nav styling rules */
 .dark-theme header {
-  background-color: #12181f !important;
-  border-color: #1e293b !important;
+  background-color: #0d1726 !important;
+  border-color: #1c2e42 !important;
 }
 
 .dark-theme nav {
-  background-color: #12181f !important;
-  border-color: #1e293b !important;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4) !important;
+  background-color: #0d1726 !important;
+  border-color: #1c2e42 !important;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.45) !important;
 }
 
 /* Specific component buttons and badges */
@@ -162,45 +162,126 @@
 
 /* Override list item hover states */
 .dark-theme .hover\:bg-slate-100:hover {
-  background-color: #1c2733 !important;
+  background-color: #112033 !important;
 }
 
 .dark-theme .hover\:bg-slate-50:hover {
-  background-color: #16202a !important;
+  background-color: #13253b !important;
 }
 
 .dark-theme .hover\:bg-slate-200:hover {
-  background-color: #1e2c3a !important;
+  background-color: #172c47 !important;
 }
 
 .dark-theme .bg-slate-100 {
-  background-color: #1c2631 !important;
+  background-color: #112033 !important;
 }
 
 /* Fix any bright buttons */
 .dark-theme .bg-slate-200 {
-  background-color: #243242 !important;
+  background-color: #1c3554 !important;
   color: #f1f5f9 !important;
 }
 
 .dark-theme .bg-slate-105 {
-  background-color: #1c2836 !important;
+  background-color: #112033 !important;
 }
 
 /* Scrollbar customization in dark mode */
 .dark-theme .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #334155 !important;
+  background-color: #1c3554 !important;
 }
 
 /* Search suggestions tags colors */
 .dark-theme .bg-slate-100.text-slate-600 {
-  background-color: #1c2631 !important;
+  background-color: #112033 !important;
   color: #cbd5e1 !important;
-  border-color: #334155 !important;
+  border-color: #1c2e42 !important;
 }
 
 /* Interactive poll buttons and other clickable cards */
 .dark-theme button:disabled {
   opacity: 0.5;
 }
+
+/* -------------------------------------------------------------
+   EXECUTIVE CORE PALETTE OVERRIDES: #0e8bd0 (Primary) & #21c3ce (Secondary) 
+   ------------------------------------------------------------- */
+
+/* 1. Primary Actions (Buttons, Links, Submit triggers, Clickable Green/Emerald Elements) */
+button[class*="bg-emerald-800"],
+button[class*="bg-emerald-850"],
+button[class*="bg-emerald-900"],
+button[class*="bg-emerald-950"],
+button[class*="bg-[#10b981]"],
+button.bg-emerald-900,
+button.bg-[#10b981],
+a[class*="bg-emerald-800"],
+a[class*="bg-emerald-900"],
+a[class*="bg-emerald-950"],
+.cursor-pointer[class*="bg-emerald-800"],
+.cursor-pointer[class*="bg-emerald-850"],
+.cursor-pointer[class*="bg-emerald-900"],
+.cursor-pointer[class*="bg-emerald-950"],
+.primary-btn {
+  background-color: #0e8bd0 !important;
+  color: #ffffff !important;
+  border-color: #0e8bd0 !important;
+}
+
+button[class*="bg-emerald-800"]:hover,
+button[class*="bg-emerald-850"]:hover,
+button[class*="bg-emerald-900"]:hover,
+button[class*="bg-emerald-950"]:hover,
+button[class*="bg-[#10b981]"]:hover,
+button.bg-[#10b981]:hover,
+a[class*="bg-emerald-800"]:hover,
+a[class*="bg-emerald-900"]:hover,
+a[class*="bg-emerald-950"]:hover,
+.cursor-pointer[class*="bg-emerald-800"]:hover,
+.cursor-pointer[class*="bg-emerald-850"]:hover,
+.cursor-pointer[class*="bg-emerald-900"]:hover,
+.cursor-pointer[class*="bg-emerald-950"]:hover,
+.primary-btn:hover {
+  background-color: #0a6fad !important;
+  color: #ffffff !important;
+  border-color: #0a6fad !important;
+}
+
+/* 2. Secondary Actions (Lookup controls, secondary buttons, filters) */
+button[class*="bg-slate-200"],
+button[class*="bg-slate-800"],
+button[class*="bg-[#133054]"],
+button[class*="bg-emerald-50"],
+button.bg-slate-200,
+button.bg-slate-800,
+button.bg-[#133054],
+button.bg-emerald-50,
+a.bg-slate-800,
+.cursor-pointer[class*="bg-emerald-50"],
+.cursor-pointer[class*="bg-emerald-100"],
+.secondary-btn {
+  background-color: #21c3ce !important;
+  color: #091a2e !important;
+  border-color: #21c3ce !important;
+  font-weight: 700 !important;
+}
+
+button[class*="bg-slate-200"]:hover,
+button[class*="bg-slate-800"]:hover,
+button[class*="bg-[#133054]"]:hover,
+button[class*="bg-emerald-50"]:hover,
+button.bg-slate-200:hover,
+button.bg-slate-800:hover,
+button.bg-[#133054]:hover,
+button.bg-emerald-50:hover,
+a.bg-slate-800:hover,
+.cursor-pointer[class*="bg-emerald-50"]:hover,
+.cursor-pointer[class*="bg-emerald-100"]:hover,
+.secondary-btn:hover {
+  background-color: #1aaab5 !important;
+  color: #091a2e !important;
+  border-color: #1aaab5 !important;
+}
+
 

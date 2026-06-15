@@ -219,7 +219,7 @@ export default function App() {
       
       {/* Outer Mobile Mock Container Frame mimicking Facebook's compact, premium aesthetic */}
       <div className={`w-full max-w-md h-full max-h-[100dvh] sm:h-[840px] sm:max-h-[90vh] flex flex-col relative shadow-2xl sm:rounded-[36px] overflow-hidden border border-slate-800 transition-colors duration-300 ${
-        isDarkMode ? "dark-theme bg-[#0c1115]" : "bg-[#f0f2f5]"
+        isDarkMode ? "dark-theme bg-[#060d17]" : "bg-[#f0f2f5]"
       }`}>
         
         {/* GLOBAL HEADER - Brand on left, Global Utilities on right */}
@@ -316,8 +316,8 @@ export default function App() {
         </header>
 
         {/* CURRENT LIVE OVERVIEW ACTIVE ROLE TOAST */}
-        <div className="shrink-0 bg-emerald-900/90 text-emerald-100 text-[8.5px] font-bold tracking-wider px-4 py-1 text-center uppercase select-none">
-          🧑‍💼 LIVE EXPERIMENTAL PORTAL ROLE: <span className="text-amber-300 font-extrabold">{currentUserRole}</span>
+        <div className="shrink-0 bg-[#091b2e] text-slate-200 border-b border-[#1c2e42]/60 text-[8.5px] font-bold tracking-widest px-4 py-1.5 text-center uppercase select-none">
+          ROLE ACCESS CLEARANCE: <span className="text-[#10b981] font-extrabold">{currentUserRole}</span>
         </div>
 
         {/* PRIMARY WINDOW CONTENT PORT - scrollable internal tabs */}
@@ -404,7 +404,7 @@ export default function App() {
                 {isActive && (
                   <motion.div
                     layoutId="activeTabPill"
-                    className="absolute inset-0 bg-[#e6fbf3] rounded-xl -z-10"
+                    className="absolute inset-0 bg-[#0a5f6a] rounded-xl -z-10"
                     transition={{ type: "spring", stiffness: 360, damping: 28 }}
                   />
                 )}
@@ -412,13 +412,12 @@ export default function App() {
                 <IconComponent 
                   size={17} 
                   strokeWidth={isActive ? 2.5 : 2}
-                  className={`transition-colors duration-100 ${
-                    isActive ? "text-emerald-900" : "text-slate-400 group-hover:text-slate-600"
-                  }`} 
+                  className="transition-colors duration-100"
+                  style={{ color: isActive ? "#21c3ce" : undefined }}
                 />
                 
                 <span className={`text-[8.5px] font-extrabold mt-1 tracking-wider uppercase transition-colors duration-100 ${
-                  isActive ? "text-slate-900 font-extrabold" : "text-slate-400 group-hover:text-slate-500"
+                  isActive ? "text-white font-extrabold" : "text-slate-400 group-hover:text-slate-500"
                 }`}>
                   {tab.label}
                 </span>

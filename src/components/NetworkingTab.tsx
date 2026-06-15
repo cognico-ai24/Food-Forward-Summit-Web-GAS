@@ -104,8 +104,8 @@ export default function NetworkingTab({
       <div className="shrink-0 bg-white rounded-2xl border border-slate-200/50 p-3 flex justify-between items-center">
         <div>
           <div className="flex items-center gap-1">
-            <Sparkles size={13} className="text-emerald-700 animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-800">Gemini Matchmaking Hub</span>
+            <Sparkles size={13} className="text-[#21c3ce] animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-widest text-[#21c3ce]" style={{ color: "#21c3ce" }}>Gemini Matchmaking Hub</span>
           </div>
           <p className="text-[10px] text-slate-500 font-bold">Cross-vector embeddings suggest matches for your enterprise.</p>
         </div>
@@ -114,7 +114,8 @@ export default function NetworkingTab({
             setIsOnboarded(false);
             setMatchResult(null);
           }}
-          className="p-1 px-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-[9px] font-extrabold uppercase tracking-wider text-slate-600 transition"
+          className="p-1 px-2.5 bg-[#0e8bd0] hover:bg-slate-200 rounded-lg text-[9px] font-extrabold uppercase tracking-wider text-white transition"
+          style={{ backgroundColor: "#0e8bd0" }}
         >
           Reset Hub
         </button>

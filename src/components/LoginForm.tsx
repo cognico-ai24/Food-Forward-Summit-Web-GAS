@@ -132,10 +132,10 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center p-6 bg-[#08101d] text-white font-sans selection:bg-[#00e1ef] selection:text-slate-950 overflow-hidden relative">
+    <div className="h-screen w-screen flex items-center justify-center p-6 bg-[#0a1523] text-white font-sans selection:bg-[#10b981] selection:text-white overflow-hidden relative">
       
       {/* Background visual geometric grid overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(#0c2537_1px,transparent_1px)] [background-size:16px_16px] opacity-30 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(#1e3a5f_1px,transparent_1px)] [background-size:16px_16px] opacity-35 pointer-events-none"></div>
 
       <div className="w-full max-w-[390px] flex flex-col justify-center h-full max-h-[95vh] sm:max-h-[820px] relative z-10">
         
@@ -157,7 +157,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           </motion.div>
 
           <h2 className="text-[20px] font-black tracking-tight text-white leading-none uppercase">
-            Food Forward <span className="text-[#00e1ef]">Summit</span>
+            Food Forward <span className="text-[#21c3ce]" style={{ color: "#21c3ce" }}>Summit</span>
           </h2>
           <p className="text-slate-400 text-[10px] font-semibold leading-relaxed tracking-wide mt-2 px-4">
             Security Clearance & Matchmaking Gateway for Registered Exhibitors, Speakers & Sponsors
@@ -171,19 +171,19 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               /* PANEL A: LOGIN TYPE SELECTION */
               <motion.div
                 key="method-panel"
-                className="bg-[#081d26] rounded-[22px] p-5 border border-[#0d2a37] shadow-2xl w-full"
+                className="bg-[#112338] rounded-[22px] p-5 border border-[#1d3557] shadow-xl w-full"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
               >
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#00e1ef]">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0e8bd0]">
                     Step 1: SELECT ACCOUNT TYPE
                   </h3>
                   <button 
                     onClick={() => setShowLookup(!showLookup)}
-                    className="flex items-center gap-1 text-[9px] font-extrabold px-2 py-1 rounded-md bg-[#0c2e3d] text-amber-300 hover:bg-[#0f3c50] transition cursor-pointer"
+                    className="flex items-center gap-1 text-[9px] font-extrabold px-2 py-1 rounded-md bg-[#133054] text-amber-300 hover:bg-[#1a4170] transition cursor-pointer"
                   >
                     <HelpCircle size={10} />
                     Lookup Codes
@@ -194,7 +194,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                   {/* Business Email Field */}
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail className="h-4.5 w-4.5 text-[#45d4ea] opacity-80" />
+                      <Mail className="h-4.5 w-4.5 text-[#0e8bd0] opacity-90" />
                     </div>
                     <input
                       type="email"
@@ -204,8 +204,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                         if (error) setError("");
                       }}
                       placeholder="Enter Business Email Address"
-                      className={`w-full bg-[#030e14] text-white placeholder-slate-500 text-xs rounded-[12px] pl-10 pr-4 py-3.5 border focus:outline-none focus:ring-1 focus:ring-[#00e1ef] transition font-bold ${
-                        error ? "border-red-500" : "border-[#153444] focus:border-[#00e1ef]"
+                      className={`w-full bg-[#030e14] text-white placeholder-slate-500 text-xs rounded-[12px] pl-10 pr-4 py-3.5 border focus:outline-none focus:ring-1 focus:ring-[#0e8bd0] transition font-bold ${
+                        error ? "border-red-500" : "border-[#1d3557] focus:border-[#0e8bd0]"
                       }`}
                     />
                   </div>
@@ -219,7 +219,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#44d4ea] hover:bg-[#2bcde5] text-[#030e14] font-extrabold rounded-full text-[11px] uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#0e8bd0] hover:bg-[#0a6fad] text-white font-extrabold rounded-full text-[11px] uppercase tracking-wider transition-all cursor-pointer shadow-md"
                   >
                     <span>Continue with Email</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -228,30 +228,30 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
                 {/* Secure Divider */}
                 <div className="flex items-center gap-3 my-4">
-                  <div className="flex-1 h-[1px] bg-[#112431]"></div>
+                  <div className="flex-1 h-[1px] bg-[#1d3557]"></div>
                   <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500">
                     OR SECURELY CONNECT WITH
                   </span>
-                  <div className="flex-1 h-[1px] bg-[#112431]"></div>
+                  <div className="flex-1 h-[1px] bg-[#1d3557]"></div>
                 </div>
 
                 {/* Social Integration Options */}
                 <div className="space-y-2">
                   <button
                     onClick={() => handleSocialSelect("Google")}
-                    className="w-full hover:bg-[#0c2c3b]/30 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
+                    className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#0d2a37] w-6 h-6 rounded-full">
-                      <Globe className="w-3.5 h-3.5 text-[#00aaff]" />
+                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
+                      <Globe className="w-3.5 h-3.5 text-[#3b82f6]" />
                     </div>
                     <span>Continue with Google</span>
                   </button>
 
                   <button
                     onClick={() => handleSocialSelect("LinkedIn")}
-                    className="w-full hover:bg-[#0c2c3b]/30 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
+                    className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#0d2a37] w-6 h-6 rounded-full">
+                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
                       <Briefcase className="w-3.5 h-3.5 text-amber-500" />
                     </div>
                     <span>Continue with LinkedIn</span>
@@ -259,9 +259,9 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
                   <button
                     onClick={() => handleSocialSelect("Apple")}
-                    className="w-full hover:bg-[#0c2c3b]/30 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
+                    className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#0d2a37] w-6 h-6 rounded-full">
+                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
                       <Apple className="w-3.5 h-3.5 text-slate-300 fill-current" />
                     </div>
                     <span>Continue with Apple</span>
@@ -272,7 +272,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               /* PANEL B: UUID SUBMISSION CARD */
               <motion.div
                 key="uuid-panel"
-                className="bg-[#0c2432] rounded-[22px] p-5 border border-[#11374a] shadow-2xl w-full"
+                className="bg-[#112338] rounded-[22px] p-5 border border-[#1d3557] shadow-xl w-full"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -284,19 +284,19 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                       setStep("method");
                       setError("");
                     }}
-                    className="p-1 hover:bg-[#061821] rounded-full text-slate-400 hover:text-white transition cursor-pointer"
+                    className="p-1 hover:bg-[#133054] rounded-full text-slate-400 hover:text-white transition cursor-pointer"
                     title="Change login method"
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#00e1ef]">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0e8bd0]">
                     Step 2: SECURE SIGNATURE LOCK
                   </h3>
                 </div>
 
                 <div className="p-3.5 bg-[#030e14] rounded-xl border border-slate-800/40 mb-3.5">
-                  <div className="flex gap-2 items-center text-emerald-400 mb-1">
-                    <ShieldCheck size={14} />
+                  <div className="flex gap-2 items-center text-cyan-400 mb-1">
+                    <ShieldCheck size={14} className="text-[#21c3ce]" />
                     <span className="text-[9px] uppercase font-black tracking-widest">
                       {loginType} verification pending
                     </span>
@@ -309,7 +309,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                 <form onSubmit={handleAuthenticateUuid} className="space-y-3.5">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock className="h-4 w-4 text-[#00e1ef]" />
+                      <Lock className="h-4 w-4 text-[#0e8bd0]" />
                     </div>
                     <input
                       type="text"
@@ -320,8 +320,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                         if (error) setError("");
                       }}
                       placeholder="e.g. 884384d3-2093-41e2-b77f-..."
-                      className={`w-full bg-[#030e14] text-white placeholder-slate-500 text-xs rounded-[12px] pl-10 pr-4 py-3.5 border focus:outline-none focus:ring-1 focus:ring-[#00e1ef] font-mono tracking-wide ${
-                        error ? "border-red-500" : "border-[#1c3f56] focus:border-[#00e1ef]"
+                      className={`w-full bg-[#030e14] text-white placeholder-slate-500 text-xs rounded-[12px] pl-10 pr-4 py-3.5 border focus:outline-none focus:ring-1 focus:ring-[#0e8bd0] font-mono tracking-wide ${
+                        error ? "border-red-500" : "border-[#1d3557] focus:border-[#0e8bd0]"
                       }`}
                     />
                   </div>
@@ -337,14 +337,14 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     <button
                       type="button"
                       onClick={() => setShowLookup(true)}
-                      className="px-4 bg-[#143649] hover:bg-[#1d4c65] text-slate-200 font-bold text-xs rounded-xl transition cursor-pointer"
+                      className="px-4 bg-[#21c3ce] hover:bg-[#1aaab5] text-[#0a1523] font-black text-xs rounded-xl transition cursor-pointer"
                     >
                       Lookup Codes
                     </button>
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="flex-1 py-3.5 bg-gradient-to-r from-[#00ffd5] to-[#00bfff] hover:from-[#33ffd5] hover:to-[#33bfff] text-[#030e14] font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-100 cursor-pointer shadow-lg disabled:opacity-50"
+                      className="flex-1 py-3.5 bg-[#0e8bd0] hover:bg-[#0a6fad] text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all duration-100 cursor-pointer shadow-lg disabled:opacity-50"
                     >
                       {isLoading ? "Validating Signature..." : "Verify & Sign In"}
                     </button>
@@ -359,7 +359,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         <AnimatePresence>
           {showLookup && (
             <motion.div
-              className="absolute inset-x-0 bottom-1 bg-[#061219] border border-slate-700/50 rounded-[24px] p-4 text-white shadow-2xl overflow-y-auto max-h-[85vh] z-30"
+              className="absolute inset-x-0 bottom-1 bg-[#0a1523] border border-slate-700/50 rounded-[24px] p-4 text-white shadow-2xl overflow-y-auto max-h-[85vh] z-30"
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
@@ -368,7 +368,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               <div className="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
                 <div className="flex items-center gap-1.5">
                   <Users size={14} className="text-amber-400" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#00e1ef]">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#10b981]">
                     Secure Registry Lookup
                   </span>
                 </div>
@@ -387,7 +387,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               {/* SECTION 0: ADMINISTRATORS */}
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-1">
-                  <ShieldCheck size={10} className="text-[#00e1ef]" />
+                  <ShieldCheck size={10} className="text-[#10b981]" />
                   <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
                     System Administrators
                   </h4>
@@ -397,17 +397,17 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     <div 
                       key={adm.id}
                       onClick={() => handleCopy(adm.id, adm.email)}
-                      className="p-2 border border-slate-800 hover:border-[#00e1ef]/40 hover:bg-[#0a2330] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                      className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
                     >
                       <div className="truncate pr-2">
-                        <span className="text-[10px] font-bold text-white block group-hover:text-[#00e1ef]">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
                           {adm.name} ({adm.email})
                         </span>
                         <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
                           {adm.title}
                         </span>
                       </div>
-                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#0d2a37] text-white/80 rounded-md group-hover:bg-[#00e1ef] group-hover:text-[#030e14] transition shrink-0 flex items-center gap-1">
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
                         {copiedId === adm.id ? <Check size={8} /> : <Copy size={8} />}
                         <span>Select</span>
                       </button>
@@ -429,17 +429,17 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     <div 
                       key={s.id}
                       onClick={() => handleCopy(s.id)}
-                      className="p-2 border border-slate-800 hover:border-[#00e1ef]/40 hover:bg-[#0a2330] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                      className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
                     >
                       <div className="truncate pr-2">
-                        <span className="text-[10px] font-bold text-white block group-hover:text-[#00e1ef]">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
                           {s.name}
                         </span>
                         <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
                           {s.title}
                         </span>
                       </div>
-                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#0d2a37] text-white/80 rounded-md group-hover:bg-[#00e1ef] group-hover:text-[#030e14] transition shrink-0 flex items-center gap-1">
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
                         {copiedId === s.id ? <Check size={8} /> : <Copy size={8} />}
                         <span>Select</span>
                       </button>
@@ -451,7 +451,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               {/* SECTION 2: EXHIBITORS */}
               <div className="space-y-2">
                 <div className="flex items-center gap-1">
-                  <Globe size={10} className="text-[#00e1ef]" />
+                  <Globe size={10} className="text-[#0e8bd0]" />
                   <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
                     Pre-registered Exhibitors (CSV Database)
                   </h4>
@@ -461,17 +461,17 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     <div 
                       key={e.id}
                       onClick={() => handleCopy(e.id)}
-                      className="p-2 border border-slate-800 hover:border-[#00e1ef]/40 hover:bg-[#0a2330] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                      className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
                     >
                       <div className="truncate pr-2">
-                        <span className="text-[10px] font-bold text-white block group-hover:text-[#00e1ef]">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
                           {e.name}
                         </span>
                         <span className="text-[8.5px] font-mono font-bold text-slate-600 block group-hover:text-slate-400">
                           Universal UUID: {e.code}
                         </span>
                       </div>
-                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#0d2a37] text-white/80 rounded-md group-hover:bg-[#00e1ef] group-hover:text-[#030e14] transition shrink-0 flex items-center gap-1">
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
                         {copiedId === e.id ? <Check size={8} /> : <Copy size={8} />}
                         <span>Select</span>
                       </button>
@@ -491,8 +491,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
         {/* Footer/Trust Marker */}
         <div className="text-center mt-4 shrink-0 flex items-center justify-center gap-1.5 opacity-40">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#00e1ef]" />
-          <span className="text-[8.5px] tracking-[0.2em] text-[#00e1ef] uppercase font-black">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#0e8bd0]" />
+          <span className="text-[8.5px] tracking-[0.2em] text-[#0e8bd0] uppercase font-black">
             B2B Security Handshake Ready
           </span>
         </div>
