@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   Globe, 
   Briefcase, 
-  Apple, 
   Mail, 
   ArrowRight, 
   ChevronRight, 
@@ -241,8 +240,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     onClick={() => handleSocialSelect("Google")}
                     className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
-                      <Globe className="w-3.5 h-3.5 text-[#3b82f6]" />
+                    <div className="absolute left-5 flex items-center justify-center bg-white w-6 h-6 rounded-full p-[3px] overflow-hidden">
+                      <img 
+                        src="/src/assets/images/google.png" 
+                        alt="Google" 
+                        className="w-full h-full object-contain"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                     <span>Continue with Google</span>
                   </button>
@@ -251,8 +255,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     onClick={() => handleSocialSelect("LinkedIn")}
                     className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
-                      <Briefcase className="w-3.5 h-3.5 text-amber-500" />
+                    <div className="absolute left-5 flex items-center justify-center bg-white w-6 h-6 rounded-full overflow-hidden">
+                      <img 
+                        src="/src/assets/images/linkedin.png" 
+                        alt="LinkedIn" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                     <span>Continue with LinkedIn</span>
                   </button>
@@ -261,8 +270,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                     onClick={() => handleSocialSelect("Apple")}
                     className="w-full hover:bg-[#133054]/50 active:bg-slate-800/40 bg-[#080f1d]/40 border border-slate-700/30 text-white rounded-full py-3 px-6 flex items-center justify-center font-bold tracking-wide text-[11px] transition duration-150 relative cursor-pointer"
                   >
-                    <div className="absolute left-5 flex items-center justify-center bg-[#133054] w-6 h-6 rounded-full">
-                      <Apple className="w-3.5 h-3.5 text-slate-300 fill-current" />
+                    <div className="absolute left-5 flex items-center justify-center bg-white w-6 h-6 rounded-full p-[3px] overflow-hidden">
+                      <img 
+                        src="/src/assets/images/apple.png" 
+                        alt="Apple" 
+                        className="w-full h-full object-contain"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                     <span>Continue with Apple</span>
                   </button>

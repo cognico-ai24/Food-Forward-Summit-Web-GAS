@@ -80,6 +80,7 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
 
   const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
   const [newCommentText, setNewCommentText] = useState("");
+  const [submissionToast, setSubmissionToast] = useState(false);
 
   const isAdmin = userRole === "Admin";
 
@@ -127,19 +128,26 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
       const newPost: SocialPost = {
         id: Date.now(),
         authorName: userName,
-        authorCompany: "Delegated Summit Attendee",
-        authorRole: "Attendee",
+        authorCompany: userRole === "Exhibitor" ? "Exhibitor Representative" : "Delegated Summit Attendee",
+        authorRole: userRole || "Attendee",
         textContent: newPostText,
         imageResName: selectedPhotoIdx !== null ? illustrations[selectedPhotoIdx] : null,
         likesCount: 0,
         timestamp: Date.now(),
-        isLikedByMe: false
+        isLikedByMe: false,
+        isApproved: isAdmin ? true : false
       };
 
       setPosts(prev => [newPost, ...prev]);
       setNewPostText("");
       setSelectedPhotoIdx(null);
       setIsPosting(false);
+
+      if (!isAdmin) {
+        setSubmissionToast(true);
+        // Automatically hide toast after 6 seconds
+        setTimeout(() => setSubmissionToast(false), 6000);
+      }
     }, 450);
   };
 
@@ -160,7 +168,7 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden pb-4 gap-3">
+    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden pb-4 gap-3" style={{ height: "475.25px" }}>
       
       {/* Short Dynamic Broadcast banner (Announcements Section in Feed) */}
       <div className="shrink-0 bg-amber-50 rounded-2xl border border-amber-200/80 p-3 flex gap-2.5 items-start">
@@ -245,8 +253,32 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
           </div>
         )}
 
+        {/* SUBMISSION SUCCESS/PENDING SUCCESS ALERTS */}
+        <AnimatePresence>
+          {submissionToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-emerald-50 border border-emerald-150 rounded-2xl p-3.5 shadow-sm space-y-1 relative overflow-hidden text-left"
+            >
+              <div className="flex gap-2 items-start">
+                <span className="text-sm shrink-0">✨</span>
+                <div>
+                  <h4 className="text-[10.5px] font-black text-emerald-950 uppercase tracking-wide">Post Moderation Handshake</h4>
+                  <p className="text-[10px] text-emerald-900 font-semibold leading-relaxed mt-0.5">
+                    Your update has been uploaded successfully! Once reviewed & approved by an <strong>administrator</strong>, it will display on the global Food Forward timeline.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* FEED POSTS LIST */}
-        {posts.map((post) => {
+        {posts
+          .filter(post => post.isApproved !== false)
+          .map((post) => {
           const hasComments = commentsByPost[post.id] && commentsByPost[post.id].length > 0;
           const commentsCount = commentsByPost[post.id] ? commentsByPost[post.id].length : 0;
           const isCommenting = activeCommentPostId === post.id;

@@ -17,7 +17,11 @@ import {
 import { exhibitorsList } from "../data";
 import { ExhibitorEntity } from "../types";
 
-export default function ExhibitorTab() {
+interface ExhibitorTabProps {
+  exhibitors?: ExhibitorEntity[];
+}
+
+export default function ExhibitorTab({ exhibitors }: ExhibitorTabProps) {
   const [search, setSearch] = useState("");
   const [selectedExhibitorId, setSelectedExhibitorId] = useState<string>("ex_biocult");
   const [bookingTime, setBookingTime] = useState("");
@@ -25,14 +29,16 @@ export default function ExhibitorTab() {
   const [bookingPurpose, setBookingPurpose] = useState("Corporate Sourcing Discussion");
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
+  const currentExhibitors = exhibitors || exhibitorsList;
+
   // Filter list
-  const filteredExhibitors = exhibitorsList.filter(ex => 
+  const filteredExhibitors = currentExhibitors.filter(ex => 
     ex.name.toLowerCase().includes(search.toLowerCase()) ||
     ex.focus.toLowerCase().includes(search.toLowerCase()) ||
     ex.track.toLowerCase().includes(search.toLowerCase())
   );
 
-  const activeExhibitor = exhibitorsList.find(e => e.id === selectedExhibitorId) || exhibitorsList[0];
+  const activeExhibitor = currentExhibitors.find(e => e.id === selectedExhibitorId) || currentExhibitors[0];
 
   // Simulated media carousel photos for each exhibitor
   const mediaCarousels: Record<string, string[]> = {

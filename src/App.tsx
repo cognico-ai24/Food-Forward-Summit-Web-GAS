@@ -7,6 +7,8 @@ import NetworkingTab from "./components/NetworkingTab";
 import ExhibitorTab from "./components/ExhibitorTab";
 import AttendeeTab from "./components/AttendeeTab";
 import MenuTab from "./components/MenuTab";
+import ExhibitorsAdminTab from "./components/ExhibitorsAdminTab";
+import ExhibitorQuestionnaire from "./components/ExhibitorQuestionnaire";
 import { 
   Home as HomeIcon, 
   Calendar, 
@@ -24,7 +26,8 @@ import {
   CheckCircle,
   HelpCircle,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Building
 } from "lucide-react";
 import { ScannedContact } from "./types";
 import { exhibitorsList, initialSessions, speakersList } from "./data";
@@ -112,6 +115,13 @@ export default function App() {
     ];
   });
 
+  const [exhibitors, setExhibitors] = useState<any[]>(() => {
+    const saved = localStorage.getItem("ffs_exhibitors");
+    return saved ? JSON.parse(saved) : exhibitorsList;
+  });
+
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+
   // Global utilities modal overlay triggers
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -131,6 +141,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("ffs_scanned_leads", JSON.stringify(scannedContacts));
   }, [scannedContacts]);
+
+  useEffect(() => {
+    localStorage.setItem("ffs_exhibitors", JSON.stringify(exhibitors));
+  }, [exhibitors]);
 
   const handleLogin = (session: UserSession) => {
     setUserSession(session);
@@ -194,6 +208,15 @@ export default function App() {
 
   const currentUserRole = overriddenRole || userSession?.role || "Attendee";
 
+  useEffect(() => {
+    if (currentUserRole === "Exhibitor") {
+      const isCompleted = localStorage.getItem(`ffs_questionnaire_${currentUserEmail}`);
+      setShowQuestionnaire(!isCompleted);
+    } else {
+      setShowQuestionnaire(false);
+    }
+  }, [currentUserRole, currentUserEmail]);
+
   if (!isAuthenticated) {
     return <LoginForm onLogin={handleLogin} />;
   }
@@ -204,7 +227,7 @@ export default function App() {
     s.topicTitle.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredExhibitors = exhibitorsList.filter(e => 
+  const filteredExhibitors = exhibitors.filter(e => 
     e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     e.focus.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -347,15 +370,22 @@ export default function App() {
               )}
 
               {activeTab === "networking" && (
-                <NetworkingTab 
-                  userName={userSession?.displayName} 
-                  userCompany={userSession?.profile?.brandsRepresented || "Food Forward"} 
-                  userRole={currentUserRole}
-                />
+                currentUserRole === "Admin" ? (
+                  <ExhibitorsAdminTab 
+                    exhibitors={exhibitors} 
+                    onUpdateExhibitors={setExhibitors} 
+                  />
+                ) : (
+                  <NetworkingTab 
+                    userName={userSession?.displayName} 
+                    userCompany={userSession?.profile?.brandsRepresented || "Food Forward"} 
+                    userRole={currentUserRole}
+                  />
+                )
               )}
 
               {activeTab === "exhibitors" && (
-                currentUserRole === "Admin" ? <AttendeeTab /> : <ExhibitorTab />
+                currentUserRole === "Admin" ? <AttendeeTab /> : <ExhibitorTab exhibitors={exhibitors} />
               )}
 
               {activeTab === "menu" && (
@@ -378,7 +408,9 @@ export default function App() {
           {[
             { id: "home", label: "Home", icon: HomeIcon },
             { id: "schedule", label: "Agenda", icon: Calendar },
-            { id: "networking", label: "Match", icon: Sparkles },
+            currentUserRole === "Admin" 
+              ? { id: "networking", label: "Exhibitors", icon: Building }
+              : { id: "networking", label: "Match", icon: Sparkles },
             { 
               id: "exhibitors", 
               label: currentUserRole === "Admin" ? "Attendee" : "Booths", 
@@ -684,7 +716,13 @@ export default function App() {
           )}
         </AnimatePresence>
 
-
+        {showQuestionnaire && (
+          <ExhibitorQuestionnaire
+            userEmail={currentUserEmail}
+            userName={userSession?.displayName || "Exhibitor Guest"}
+            onComplete={() => setShowQuestionnaire(false)}
+          />
+        )}
 
       </div>
     </div>

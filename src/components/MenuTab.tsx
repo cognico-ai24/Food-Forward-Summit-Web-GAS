@@ -23,7 +23,9 @@ import {
   Mail,
   Globe,
   Linkedin,
-  ExternalLink
+  ExternalLink,
+  Trash2,
+  Clock
 } from "lucide-react";
 import { ScannedContact } from "../types";
 import { attendeesList, speakersList, exhibitorsList } from "../data";
@@ -68,6 +70,75 @@ export default function MenuTab({
   const [pollVotes, setPollVotes] = useState<number[]>([142, 89, 65, 34]);
   const [customEmbedUrl, setCustomEmbedUrl] = useState("https://www.menti.com/shbby3e8q5as");
   const [embedIframeSource, setEmbedIframeSource] = useState("https://www.menti.com/embed/shbby3e8q5as");
+
+  // Load posts dynamically for Admin review
+  const [timelinePosts, setTimelinePosts] = useState<any[]>(() => {
+    const saved = localStorage.getItem("ffs_posts");
+    if (saved) return JSON.parse(saved);
+    return [
+      {
+        id: 1,
+        authorName: "Alexander Kappes",
+        authorCompany: "Greener Herd",
+        authorRole: "Speaker",
+        textContent: "Just arrived at the Food Forward Summit in Milano! Super excited to present on AI fence line applications for smallholder ranching in the Keynote Arena later today. Let's make farming smart! 🚀🌾",
+        imageResName: "https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=400&auto=format&fit=crop&q=80",
+        likesCount: 24,
+        timestamp: Date.now() - 3600000 * 2,
+        isLikedByMe: false,
+        isApproved: true
+      },
+      {
+        id: 2,
+        authorName: "Sophia Weiss",
+        authorCompany: "Grain Millers Inc.",
+        authorRole: "Speaker",
+        textContent: "Seaweed-based compostable polymers are looking like a serious game changer in Booth B-05. Stopped by EcoPack and they showed me wrappers that dissipate in 6 weeks! Zero waste packaging of the future is here.",
+        imageResName: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=400&auto=format&fit=crop&q=80",
+        likesCount: 42,
+        timestamp: Date.now() - 3600000 * 5,
+        isLikedByMe: true,
+        isApproved: true
+      },
+      {
+        id: 3,
+        authorName: "Meifan Shi",
+        authorCompany: "Waterpoint Lane VC",
+        authorRole: "Sponsor",
+        textContent: "Looking to deploy capital for agtech startups specializing in agricultural genomics or micro-factories. Visit me in the VIP Lounge to discuss partnerships! 💼🌱",
+        imageResName: null,
+        likesCount: 18,
+        timestamp: Date.now() - 3600000 * 8,
+        isLikedByMe: false,
+        isApproved: true
+      }
+    ];
+  });
+
+  // Re-sync posts when user role shifts or component mounts
+  useEffect(() => {
+    const saved = localStorage.getItem("ffs_posts");
+    if (saved) {
+      setTimelinePosts(JSON.parse(saved));
+    }
+  }, [currentUserRole]);
+
+  const handleApprovePost = (postId: number) => {
+    const updated = timelinePosts.map(p => {
+      if (p.id === postId) {
+        return { ...p, isApproved: true };
+      }
+      return p;
+    });
+    setTimelinePosts(updated);
+    localStorage.setItem("ffs_posts", JSON.stringify(updated));
+  };
+
+  const handleRejectPost = (postId: number) => {
+    const updated = timelinePosts.filter(p => p.id !== postId);
+    setTimelinePosts(updated);
+    localStorage.setItem("ffs_posts", JSON.stringify(updated));
+  };
 
   const syncProfileDb = async () => {
     setIsSyncingProfile(true);
@@ -889,6 +960,102 @@ export default function MenuTab({
                 </button>
               </form>
             )}
+          </motion.div>
+        )}
+
+        {/* VIEW 2.5: POST MODERATION & REVIEW BOARD (Visible to Admin only) */}
+        {(currentUserRole === "Admin") && (
+          <motion.div 
+            className="bg-white rounded-2xl border border-slate-205 p-3.5 shadow-sm space-y-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex justify-between items-center pb-2 border-b border-slate-105">
+              <div className="flex items-center gap-1.5">
+                <Shield size={14} className="text-[#0a5f6a]" />
+                <h3 className="text-xs font-black text-slate-950 uppercase tracking-tight">Timeline Post Review Board</h3>
+              </div>
+              <span className="text-[8px] font-mono font-black text-white bg-[#0a5f6a] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                {timelinePosts.filter(p => p.isApproved === false).length} Pending Review
+              </span>
+            </div>
+
+            <p className="text-[9.5px] text-slate-400 font-semibold leading-relaxed text-left">
+              Community submissions representing the <strong>Blue and Green Economy</strong> intersection. Approve valid feedback or prune inappropriate posts.
+            </p>
+
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-0.5 scrollbar-thin">
+              {timelinePosts.filter(p => p.isApproved === false).length === 0 ? (
+                <div className="p-5 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center text-slate-400 text-[10px] font-bold">
+                  🎉 No posts pending moderation. You're all caught up!
+                </div>
+              ) : (
+                timelinePosts.filter(p => p.isApproved === false).map((post) => (
+                  <div key={post.id} className="bg-slate-50 rounded-xl border border-slate-150 p-2.5 flex flex-col gap-2 relative text-left">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-extrabold text-slate-950 font-sans">{post.authorName}</span>
+                          <span className={`text-[7.5px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${
+                            post.authorRole === "Speaker" 
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-100" 
+                              : post.authorRole === "Sponsor"
+                              ? "bg-sky-50 text-sky-800 border border-sky-100"
+                              : "bg-slate-200/50 text-slate-755"
+                          }`}>
+                            {post.authorRole}
+                          </span>
+                        </div>
+                        <span className="text-[8.5px] text-slate-500 font-bold block leading-relaxed">{post.authorCompany}</span>
+                      </div>
+                      
+                      <div className="text-[8px] text-slate-400 font-mono font-black flex items-center gap-1">
+                        <Clock size={8} />
+                        <span>
+                          {Math.ceil((Date.now() - post.timestamp) / 60000) < 60 
+                            ? `${Math.max(1, Math.ceil((Date.now() - post.timestamp) / 60000))}m ago`
+                            : `${Math.round((Date.now() - post.timestamp) / 3600000)}h ago`
+                          }
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-2 border border-slate-150">
+                      <p className="text-[10px] text-slate-800 font-medium leading-relaxed font-sans">{post.textContent}</p>
+                      
+                      {post.imageResName && (
+                        <div className="mt-2 rounded-md overflow-hidden max-h-[100px] border border-slate-100">
+                          <img 
+                            src={post.imageResName} 
+                            alt="Attachment preview" 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        onClick={() => handleApprovePost(post.id)}
+                        className="flex-1 py-1.5 bg-[#0a5f6a] hover:bg-[#074b54] text-white text-[9.5px] font-black uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition"
+                      >
+                        <CheckCircle size={10} />
+                        <span>Approve Post</span>
+                      </button>
+                      <button
+                        onClick={() => handleRejectPost(post.id)}
+                        className="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 border border-rose-250/50 text-rose-700 text-[9.5px] font-black uppercase tracking-wider rounded-lg flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition"
+                        title="Reject and Delete"
+                      >
+                        <Trash2 size={10} />
+                        <span>Reject</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </motion.div>
         )}
 

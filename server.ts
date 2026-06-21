@@ -108,6 +108,72 @@ function getAllExhibitorsForMatchmaking() {
   return [...staticExhibitors, ...dbMapped];
 }
 
+// Dynamically select B2B matchmaking pool depending on user profile role
+function getCandidatesForRole(role?: string) {
+  const exhibitors = getAllExhibitorsForMatchmaking();
+  
+  if (role === "Exhibitor") {
+    // Sponsors (Platinum Tier)
+    const sponsors = exhibitors.filter(ex => ex.tier === "Platinum" || ex.id.toLowerCase().includes("sponsor"));
+    
+    // High caliber Attendees (Custom built B2B profiles matching core B2B roles)
+    const staticAttendees = [
+      {
+        id: "att_greenharvest",
+        name: "GreenHarvest Sourcing (A. Dupont)",
+        focus: "Sourcing modern organic and crop-scaling technologies.",
+        track: "Tech & Innovation",
+        description: "B2B Agritech distribution agency looking for cellular beef scaling and smart temperature cold chains.",
+        tier: "Gold"
+      },
+      {
+        id: "att_oceanchoice",
+        name: "OceanChoice Co. (M. Silva)",
+        focus: "Sustainable packaging for large-scale seafood supply chains.",
+        track: "Sustainability & Packaging",
+        description: "Global seafood trading brand interested in seaweed composite packaging and bio-degradable polymer wraps.",
+        tier: "Gold"
+      },
+      {
+        id: "att_tokyobiotech",
+        name: "Tokyo Biotech Ventures (Y. Tanaka)",
+        focus: "Investing in fungi-based and cellular agriculture projects.",
+        track: "Tech & Innovation",
+        description: "Private capital firm looking to fund early stage high-conviction alternative protein scaling structures.",
+        tier: "Platinum"
+      },
+      {
+        id: "att_agriscale",
+        name: "AgriScale Global (S. Verma)",
+        focus: "Precision agricultural hardware and automated drone logistics.",
+        track: "Supply Chain & Automation",
+        description: "Agricultural logistics consulting group interested in sensor-guided crop drone flights and water recycling vertical set-ups.",
+        tier: "Silver"
+      }
+    ];
+
+    // Read saved attendees from DB who has role 'Attendee' 
+    const dbExhibitors = getExhibitors();
+    const dbAttendees = dbExhibitors
+      .filter(e => e.role === "Attendee")
+      .map(e => ({
+        id: e.id,
+        name: e.displayName,
+        focus: e.companyDescription,
+        track: "Tech & Innovation",
+        description: e.companyDescription,
+        tier: "Silver"
+      }));
+
+    const combined = [...sponsors, ...staticAttendees, ...dbAttendees];
+    // Return unique items by id
+    return Array.from(new Map(combined.map(item => [item.id, item])).values());
+  }
+
+  // Attendees get matched with Exhibitors (speakers are excluded since they are in getSpeakers API entirely)
+  return exhibitors;
+}
+
 // Global active database check on server startup
 loadDatabase();
 
@@ -117,12 +183,13 @@ function runLocalMatchmakingFallback(
   company: string,
   goal: string,
   track: string,
-  tier: string
+  tier: string,
+  role?: string
 ) {
-  const welcoming = `Hi ${name} from ${company}! Welcome to the Food Forward Summit. Based on your objective to ${goal}, we have mapped out a tailored experience across the event.`;
-  const exhibitors = getAllExhibitorsForMatchmaking();
+  const welcoming = `Hi ${name} from ${company}! Welcome to the Food Forward Summit. Based on your B2B objective to ${goal}, we have mapped out a tailored connection space for your enterprise.`;
+  const candidates = getCandidatesForRole(role);
 
-  const sortedExhibitors = exhibitors.map((ex) => {
+  const sortedExhibitors = candidates.map((ex) => {
     let score = 50;
 
     // Direct track align
@@ -168,6 +235,8 @@ function runLocalMatchmakingFallback(
       matchReason = "Their recirculating marine technology minimizes eco-footprint for coastal harvest networks.";
     } else if (ex.id === "ex_chocotrace") {
       matchReason = "Their decentralized web platform provides bulletproof geofence and compliant compliance trails.";
+    } else if (ex.id.startsWith("att_")) {
+      matchReason = `This custom registered attendee matches interest in ${ex.track} and offers direct B2B buyer synergy.`;
     }
 
     return {
@@ -326,7 +395,7 @@ app.post("/api/auth", (req, res) => {
 
 // B2B AI matchmaking proxy route
 app.post("/api/matchmaking", async (req, res) => {
-  const { name, company, goal, track, tier } = req.body;
+  const { name, company, goal, track, tier, role } = req.body;
 
   if (!name || !company || !goal || !track || !tier) {
     return res.status(400).json({ error: "Missing required onboarding profile fields" });
@@ -336,7 +405,7 @@ app.post("/api/matchmaking", async (req, res) => {
 
   if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
     console.log("No valid process.env.GEMINI_API_KEY. Running robust offline local matchmaker fallback...");
-    const localResult = runLocalMatchmakingFallback(name, company, goal, track, tier);
+    const localResult = runLocalMatchmakingFallback(name, company, goal, track, tier, role);
     return res.json(localResult);
   }
 
@@ -350,27 +419,28 @@ app.post("/api/matchmaking", async (req, res) => {
       },
     });
 
-    const exhibitors = getAllExhibitorsForMatchmaking();
-    const exhibitorsInfo = exhibitors
+    const candidates = getCandidatesForRole(role);
+    const candidatesInfo = candidates
       .map((ex) => `ID: ${ex.id}, Name: ${ex.name}, Focus: ${ex.focus}, Track: ${ex.track}, Details: ${ex.description}`)
       .join("\n");
 
+    const isExhibitor = role === "Exhibitor";
     const prompt = `
 You are an advanced enterprise B2B matchmaking agent running inside a mobile event app's backend for the Food Forward Summit 2026.
-Your objective is to ingest an individual attendee's profile/onboarding answers and cross-reference them against an array of available event exhibitors. You must select the top 3 most synergetic matches and generate a highly personalized welcome greeting.
+Your objective is to ingest an individual ${isExhibitor ? "exhibitor's" : "attendee's"} profile/onboarding answers and cross-reference them against an array of available event ${isExhibitor ? "attendees and sponsors" : "exhibitors"}. You must select the top 3 most synergetic matches and generate a highly personalized welcome greeting.
 
-Here are the attendee onboarding profile answers:
+Here are their onboarding profile answers:
 - Name: ${name}
 - Company: ${company}
 - Objective: ${goal}
 - Preferred Track: ${track}
 - Budget/Tier Goal: ${tier}
 
-Here is the database of exhibitors at the Food Forward Summit 2026:
-${exhibitorsInfo}
+Here is the database of ${isExhibitor ? "attendees and sponsors" : "exhibitors"} at the Food Forward Summit 2026:
+${candidatesInfo}
 
 CRITICAL RULES:
-1. You must only return a valid, strictly structured JSON object. 
+1. You must only return a valid, strictly structured JSON object (no markdown, no backticks). 
 2. Do not include markdown code blocks (like \`\`\`json ... \`\`\`) in the raw API response.
 3. Your JSON structure must match this exact schema:
 {
@@ -414,7 +484,7 @@ CRITICAL RULES:
     return res.json(result);
   } catch (error) {
     console.error("Gemini Matchmaker Exception. Falling back to local algorithm:", error);
-    const localResult = runLocalMatchmakingFallback(name, company, goal, track, tier);
+    const localResult = runLocalMatchmakingFallback(name, company, goal, track, tier, role);
     return res.json(localResult);
   }
 });

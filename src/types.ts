@@ -87,6 +87,7 @@ export interface SocialPost {
   timestamp: number;
   isLikedByMe: boolean;
   authorRole: string;
+  isApproved?: boolean;
 }
 
 export interface GamificationState {

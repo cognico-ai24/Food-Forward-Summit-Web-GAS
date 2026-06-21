@@ -60,7 +60,8 @@ export default function NetworkingTab({
           company: userCompany,
           goal,
           track,
-          tier: budget
+          tier: budget,
+          role: userRole
         })
       });
 
