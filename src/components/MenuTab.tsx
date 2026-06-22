@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Shield, 
@@ -63,6 +63,22 @@ export default function MenuTab({
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const [isSyncingProfile, setIsSyncingProfile] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "none">("idle");
+
+  // Lead Retrieval sync states
+  const [leadSyncState, setLeadSyncState] = useState<"synced" | "saving">("synced");
+  const previousHashRef = useRef(JSON.stringify(scannedContacts));
+
+  useEffect(() => {
+    const currentHash = JSON.stringify(scannedContacts);
+    if (previousHashRef.current !== currentHash) {
+      previousHashRef.current = currentHash;
+      setLeadSyncState("saving");
+      const timer = setTimeout(() => {
+        setLeadSyncState("synced");
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [scannedContacts]);
 
   // Mentimeter Live Polling states
   const [pollMode, setPollMode] = useState<"interactive" | "embedded">("interactive");
@@ -815,9 +831,36 @@ export default function MenuTab({
                 <Users size={14} className="text-emerald-800" />
                 <h3 className="text-xs font-black text-slate-950 uppercase tracking-tight">Lead Retrieval Retrieval</h3>
               </div>
-              <span className="text-[9px] font-mono font-black text-[#006e80] bg-emerald-50 px-2 py-0.5 rounded-full">
-                {scannedContacts.length} Badges Scanned
-              </span>
+              <div className="flex items-center gap-1.5">
+                <AnimatePresence mode="wait">
+                  {leadSyncState === "saving" ? (
+                    <motion.span 
+                      key="saving"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="text-[8.5px] font-extrabold text-[#006e80]/90 lowercase bg-[#006e80]/5 border border-[#006e80]/15 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0"
+                    >
+                      <RefreshCw size={8} className="animate-spin text-[#006e80]" />
+                      saving...
+                    </motion.span>
+                  ) : (
+                    <motion.span 
+                      key="synced"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="text-[8.5px] font-black text-[#10b981] lowercase bg-[#10b981]/5 border border-[#10b981]/25 px-1.5 py-0.5 rounded-full flex items-center gap-1 shrink-0"
+                    >
+                      <CheckCircle size={8} className="text-[#10b981]" />
+                      synced
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                <span className="text-[9px] font-mono font-black text-[#006e80] bg-emerald-50 px-2 py-0.5 rounded-full select-none shrink-0 border border-emerald-100">
+                  {scannedContacts.length} Badges Scanned
+                </span>
+              </div>
             </div>
 
             <p className="text-[9.5px] text-slate-400 font-semibold leading-relaxed">

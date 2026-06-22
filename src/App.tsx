@@ -27,7 +27,9 @@ import {
   HelpCircle,
   Clock,
   ArrowRight,
-  Building
+  Building,
+  Trash2,
+  Contact
 } from "lucide-react";
 import { ScannedContact } from "./types";
 import { exhibitorsList, initialSessions, speakersList } from "./data";
@@ -126,6 +128,7 @@ export default function App() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Notifications broadcasts queue
   const [broadcasts] = useState([
@@ -137,6 +140,37 @@ export default function App() {
 
   // Search filter query
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchCategory, setSearchCategory] = useState<"All" | "Speakers" | "Booths" | "Sessions">("All");
+
+  // Search history state persisted in localStorage
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    const saved = localStorage.getItem("ffs_recent_searches");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const addToSearchHistory = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setSearchHistory(prev => {
+      const filtered = prev.filter(q => q.toLowerCase() !== trimmed.toLowerCase());
+      const updated = [trimmed, ...filtered].slice(0, 6);
+      localStorage.setItem("ffs_recent_searches", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const removeFromSearchHistory = (query: string) => {
+    setSearchHistory(prev => {
+      const updated = prev.filter(q => q !== query);
+      localStorage.setItem("ffs_recent_searches", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const clearSearchHistory = () => {
+    setSearchHistory([]);
+    localStorage.removeItem("ffs_recent_searches");
+  };
 
   useEffect(() => {
     localStorage.setItem("ffs_scanned_leads", JSON.stringify(scannedContacts));
@@ -222,20 +256,26 @@ export default function App() {
   }
 
   // Filter speakers, exhibitors and sessions for search
-  const filteredSpeakers = speakersList.filter(s => 
-    s.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.topicTitle.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSpeakers = (searchCategory === "All" || searchCategory === "Speakers")
+    ? speakersList.filter(s => 
+        s.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        s.topicTitle.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
-  const filteredExhibitors = exhibitors.filter(e => 
-    e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    e.focus.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredExhibitors = (searchCategory === "All" || searchCategory === "Booths")
+    ? exhibitors.filter(e => 
+        e.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        e.focus.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
-  const filteredSessions = initialSessions.filter(s => 
-    s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.speaker.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSessions = (searchCategory === "All" || searchCategory === "Sessions")
+    ? initialSessions.filter(s => 
+        s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.speaker.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   return (
     <div className={`h-screen w-screen text-slate-900 font-sans flex items-center justify-center overflow-hidden transition-colors duration-300 ${
@@ -271,6 +311,16 @@ export default function App() {
               title="Universal Search"
             >
               <Search size={14} />
+            </button>
+
+            {/* My QR Badge button */}
+            <button
+              onClick={() => setIsBadgeOpen(true)}
+              className="px-2.5 py-1.5 text-[#0a5f6a] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-xl cursor-pointer transition active:scale-90 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider select-none shrink-0"
+              title="My QR Badge Pass"
+            >
+              <Contact size={12} className="text-emerald-700" />
+              <span className="hidden sm:inline">My QR Badge</span>
             </button>
 
             {/* Hardware badge camera scanner triggers */}
@@ -570,6 +620,18 @@ export default function App() {
                       >
                         Marc-André R.
                       </button>
+                      {userSession && (
+                        <button 
+                          onClick={() => handleSimulateScan(
+                            userSession.displayName || "Exhibitor Guest",
+                            userSession.profile?.brandsRepresented || "Food Forward",
+                            userSession.email
+                          )}
+                          className="col-span-2 py-2.5 bg-[#0a5f6a]/20 border border-[#21c3ce]/35 hover:bg-[#0a5f6a]/30 text-[#21c3ce] text-[10.5px] font-black uppercase rounded-xl transition cursor-pointer"
+                        >
+                          Scan My Own Badge ({userSession.displayName.split(' ')[0]})
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -589,48 +651,145 @@ export default function App() {
               id="search_immersive_panel"
             >
               {/* Header Box */}
-              <div className="shrink-0 px-4 py-3 border-b border-slate-200 flex items-center justify-between gap-3 bg-slate-50">
-                <div className="flex-grow relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <Search size={13} />
+              <div className="shrink-0 px-4 pt-3 pb-2.5 border-b border-slate-200 flex flex-col gap-2.5 bg-slate-50">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-grow relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Search size={13} />
+                    </div>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && searchQuery.trim() !== "") {
+                          addToSearchHistory(searchQuery);
+                        }
+                      }}
+                      placeholder="Search speakers, exhibitors, sessions..."
+                      className="w-full bg-white border border-slate-250 placeholder-slate-400 text-xs rounded-xl pl-9 pr-4 py-2.5 outline-none font-bold focus:ring-1 focus:ring-emerald-800"
+                      autoFocus
+                    />
                   </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search speakers, exhibitors, sessions..."
-                    className="w-full bg-white border border-slate-250 placeholder-slate-400 text-xs rounded-xl pl-9 pr-4 py-2.5 outline-none font-bold focus:ring-1 focus:ring-emerald-800"
-                    autoFocus
-                  />
+                  <button 
+                    onClick={() => setIsSearchOpen(false)}
+                    className="p-1 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold text-[10px] uppercase rounded-xl transition cursor-pointer shrink-0"
+                  >
+                    Cancel
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setIsSearchOpen(false)}
-                  className="p-1 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold text-[10px] uppercase rounded-xl transition cursor-pointer shrink-0"
-                >
-                  Cancel
-                </button>
+
+                {/* Quick-filter dynamic buttons */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none shrink-0 select-none">
+                  {[
+                    { id: "All", label: "✨ All Items" },
+                    { id: "Booths", label: "🌱 Booths" },
+                    { id: "Speakers", label: "🗣️ Speakers" },
+                    { id: "Sessions", label: "📅 Sessions" }
+                  ].map(cat => {
+                    const isActive = searchCategory === cat.id;
+                    let activeStyles = "";
+                    if (isActive) {
+                      if (cat.id === "All") activeStyles = "bg-[#0a5f6a] text-white border-[#0a5f6a]";
+                      else if (cat.id === "Booths") activeStyles = "bg-emerald-700 text-white border-emerald-700";
+                      else if (cat.id === "Speakers") activeStyles = "bg-sky-700 text-white border-sky-700";
+                      else if (cat.id === "Sessions") activeStyles = "bg-[#1e1b4b] text-white border-[#1e1b4b]";
+                    } else {
+                      activeStyles = "bg-white text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100";
+                    }
+
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSearchCategory(cat.id as any)}
+                        className={`text-[9px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shrink-0 transition duration-150 cursor-pointer ${activeStyles}`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Results View */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 text-left">
+              <div className="flex-1 overflow-y-auto p-4 space-y-5 text-left">
                 {searchQuery.trim() === "" ? (
-                  <div className="text-center py-10 space-y-2 text-slate-400">
-                    <HelpCircle size={28} className="mx-auto opacity-40 animate-pulse" />
-                    <p className="text-[11px] font-bold">Write query matching speakers, sessions or booths</p>
-                    <div className="flex flex-wrap justify-center gap-1.5 pt-2">
-                      {["BioCult", "Alexander", "Regenerative", "Drone"].map((sWord) => (
-                        <button 
-                          key={sWord}
-                          onClick={() => setSearchQuery(sWord)}
-                          className="bg-slate-100 text-slate-600 font-black uppercase text-[9px] px-2.5 py-1 rounded-full border border-slate-200 cursor-pointer"
-                        >
-                          {sWord}
-                        </button>
-                      ))}
+                  <div className="space-y-5">
+                    {/* Recent Searches */}
+                    {searchHistory.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[8.5px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <Clock size={10} className="text-slate-450" />
+                            Recent Searches
+                          </span>
+                          <button
+                            onClick={clearSearchHistory}
+                            className="text-[9.5px] font-extrabold text-rose-600 hover:text-rose-700 uppercase tracking-wider flex items-center gap-1 cursor-pointer select-none border-none bg-transparent"
+                          >
+                            <Trash2 size={9.5} />
+                            Clear All
+                          </button>
+                        </div>
+                        <div className="space-y-1.5">
+                          {searchHistory.map((queryText, index) => (
+                            <div 
+                              key={index}
+                              className="flex items-center justify-between bg-slate-50 border border-slate-150 rounded-xl px-3 py-2 hover:bg-slate-100/80 transition duration-150 group"
+                            >
+                              <button
+                                onClick={() => {
+                                  setSearchQuery(queryText);
+                                  setSearchCategory("All"); // Reset category to ensure user actually hits records
+                                }}
+                                className="flex-grow text-left text-[11px] font-bold text-slate-700 hover:text-slate-900 flex items-center gap-2 cursor-pointer select-none"
+                              >
+                                <Search size={11} className="text-slate-400 group-hover:text-slate-600" />
+                                <span>{queryText}</span>
+                              </button>
+                              <button
+                                onClick={() => removeFromSearchHistory(queryText)}
+                                className="p-1 px-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer select-none"
+                                title="Remove item"
+                              >
+                                <X size={11} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Default Suggested Keywords */}
+                    <div className="space-y-2">
+                      <span className="text-[8.5px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <Sparkles size={10} className="text-amber-500" />
+                        Trending & Suggested Topics
+                      </span>
+                      <div className="p-3.5 bg-slate-50 border border-slate-150 rounded-2xl space-y-3">
+                        <p className="text-[10px] font-bold text-slate-550 leading-relaxed">
+                          Tap a suggested keyword below to instantly filter speaking panels, agricultural tech booths, or agenda tracks:
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {["BioCult", "Alexander", "Regenerative", "Drone", "Milano", "Aquaculture", "Decarbonization"].map((sWord) => (
+                            <button 
+                              key={sWord}
+                              onClick={() => {
+                                setSearchQuery(sWord);
+                                addToSearchHistory(sWord);
+                                setSearchCategory("All"); // Ensure all show
+                              }}
+                              className="bg-white text-[#0a5f6a] hover:bg-slate-100 font-extrabold text-[9px] px-2.5 py-1.5 rounded-full border border-slate-200 shadow-xs cursor-pointer select-none transition"
+                            >
+                              💡 {sWord}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 animate-fadeIn">
                     
                     {/* Exhibitor Results */}
                     {filteredExhibitors.length > 0 && (
@@ -641,16 +800,17 @@ export default function App() {
                             <div 
                               key={ex.id} 
                               onClick={() => {
+                                addToSearchHistory(searchQuery);
                                 setIsSearchOpen(false);
                                 setActiveTab("exhibitors");
                               }}
-                              className="bg-slate-55 p-3 bg-slate-50 border rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition"
+                              className="bg-slate-50 p-3 border border-slate-150 hover:border-slate-350 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition duration-150"
                             >
                               <div>
                                 <span className="text-xs font-black text-slate-900">{ex.logoAsset} {ex.name}</span>
-                                <span className="text-[9px] text-slate-500 block font-bold">Loc: {ex.boothLocation} | {ex.focus}</span>
+                                <span className="text-[9.5px] text-slate-500 block font-bold mt-0.5">Loc: {ex.boothLocation} | {ex.focus}</span>
                               </div>
-                              <ArrowRight size={12} className="text-emerald-800" />
+                              <ArrowRight size={12} className="text-[#0a5f6a]" />
                             </div>
                           ))}
                         </div>
@@ -666,16 +826,17 @@ export default function App() {
                             <div 
                               key={spk.id} 
                               onClick={() => {
+                                addToSearchHistory(searchQuery);
                                 setIsSearchOpen(false);
-                                setActiveTab("menu"); // Go to role-level profiles/agenda
+                                setActiveTab("menu"); // Go to role-level profiles or agenda review
                               }}
-                              className="bg-slate-55 p-3 bg-slate-50 border rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition"
+                              className="bg-slate-55 p-3 bg-slate-50 border border-slate-150 hover:border-slate-350 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition duration-150"
                             >
                               <div>
                                 <span className="text-xs font-black text-slate-900">🗣️ {spk.fullName}</span>
-                                <span className="text-[9px] text-slate-500 block font-bold">{spk.topicTitle}</span>
+                                <span className="text-[9.5px] text-slate-500 block font-bold mt-0.5">{spk.topicTitle}</span>
                               </div>
-                              <ArrowRight size={12} className="text-emerald-800" />
+                              <ArrowRight size={12} className="text-[#0a5f6a]" />
                             </div>
                           ))}
                         </div>
@@ -691,16 +852,17 @@ export default function App() {
                             <div 
                               key={sess.id} 
                               onClick={() => {
+                                addToSearchHistory(searchQuery);
                                 setIsSearchOpen(false);
                                 setActiveTab("schedule");
                               }}
-                              className="bg-slate-55 p-3 bg-slate-50 border rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition"
+                              className="bg-slate-55 p-3 bg-slate-50 border border-slate-150 hover:border-slate-350 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-100 transition duration-150"
                             >
                               <div>
                                 <span className="text-xs font-black text-slate-900">📅 {sess.title}</span>
-                                <span className="text-[9px] text-slate-500 block font-bold">{sess.startTime} - {sess.endTime} | Room: {sess.location}</span>
+                                <span className="text-[9.5px] text-slate-500 block font-bold mt-0.5">{sess.startTime} - {sess.endTime} | Room: {sess.location}</span>
                               </div>
-                              <ArrowRight size={12} className="text-emerald-800" />
+                              <ArrowRight size={12} className="text-[#0a5f6a]" />
                             </div>
                           ))}
                         </div>
@@ -708,12 +870,125 @@ export default function App() {
                     )}
 
                     {filteredExhibitors.length === 0 && filteredSpeakers.length === 0 && filteredSessions.length === 0 && (
-                      <div className="text-center py-8 text-slate-400 text-xs font-semibold">No direct results matching term.</div>
+                      <div className="text-center py-12 text-slate-400">
+                        <HelpCircle size={24} className="mx-auto opacity-30 mb-2" />
+                        <p className="text-xs font-semibold">No direct results matching "{searchQuery}" under the selected category.</p>
+                        <button 
+                          onClick={() => setSearchCategory("All")}
+                          className="mt-2.5 text-[10px] font-extrabold uppercase text-[#0a5f6a] bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200"
+                        >
+                          Clear Categories Filter
+                        </button>
+                      </div>
                     )}
 
                   </div>
                 )}
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* PERSISTENT MODAL 4: USER'S OWN QR CODES BADGE PASS CARD */}
+        <AnimatePresence>
+          {isBadgeOpen && (
+            <motion.div 
+              className="absolute inset-x-0 top-0 bottom-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-5 select-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              id="my_qr_badge_modal"
+            >
+              <motion.div 
+                className="w-full max-w-[340px] bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-2xl flex flex-col text-slate-900 animate-fadeIn"
+                initial={{ scale: 0.95, y: 15 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 15 }}
+              >
+                {/* Header box with green theme accent representing B2B agrarian/green economy axes */}
+                <div className="bg-[#091b2e] text-white p-3.5 border-b border-slate-800 flex justify-between items-center">
+                  <div className="flex items-center gap-1.5">
+                    <Contact size={14} className="text-[#10b981]" />
+                    <span className="text-[9.5px] font-black uppercase tracking-widest text-[#10b981]">FFS Digital Badge</span>
+                  </div>
+                  <button 
+                    onClick={() => setIsBadgeOpen(false)} 
+                    className="p-1 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition cursor-pointer select-none"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+
+                <div className="p-5 flex-grow space-y-4 text-center">
+                  {/* Badge Physical Frame Mockup */}
+                  <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3.5 shadow-sm relative overflow-hidden">
+                    {/* Top colored status pill - Forest Green/Maritime Blue gradient */}
+                    <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-emerald-600 to-[#0a5f6a]"></div>
+                    
+                    {/* Event logo context */}
+                    <div className="text-center">
+                      <span className="text-[8px] font-black tracking-widest text-slate-400 uppercase">FOOD FORWARD SUMMIT 2026</span>
+                    </div>
+
+                    {/* QR Code container */}
+                    <div className="bg-white p-3.5 rounded-xl border border-slate-150 inline-block shadow-sm relative group mx-auto">
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                          `BEGIN:VCARD\nVERSION:3.0\nFN:${userSession?.displayName || "Guest"}\nORG:${userSession?.profile?.brandsRepresented || "Food Forward"}\nEMAIL:${userSession?.email || ""}\nTITLE:${currentUserRole}\nNOTE:Scanned via Food Forward 2026\nEND:VCARD`
+                        )}&color=052e16`}
+                        alt="Your QR Badge Pass"
+                        className="w-40 h-40 object-contain mx-auto transition-transform duration-300 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    {/* Attendees Detail Segment */}
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-black text-slate-900 tracking-tight">{userSession?.displayName || "Experimental Guest"}</h4>
+                      <p className="text-[10px] text-[#0a5f6a] font-extrabold uppercase tracking-wide">
+                        {userSession?.profile?.brandsRepresented || "Food Forward Summit"}
+                      </p>
+                      
+                      <div className="pt-1 flex flex-col gap-0.5 text-center">
+                        <span className="text-[9.5px] font-mono font-bold text-slate-500">{userSession?.email}</span>
+                        <div className="mt-1.5 inline-flex self-center items-center gap-1 px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase bg-emerald-50 text-emerald-800 border border-emerald-100">
+                          🟢 {currentUserRole} Tier
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description helper */}
+                  <p className="text-[10px] text-slate-500 leading-relaxed max-w-[280px] mx-auto">
+                    Present this digital QR badge code at any sponsor table or networking terminal to instantly sync and share your business profile contact credentials.
+                  </p>
+
+                  {/* Actions Hub */}
+                  <div className="space-y-2 pt-1.5">
+                    <button
+                      onClick={() => {
+                        const copyText = `${userSession?.displayName || "Guest"}\nCompany: ${userSession?.profile?.brandsRepresented || "Food Forward"}\nEmail: ${userSession?.email || ""}\nRole: ${currentUserRole}`;
+                        navigator.clipboard.writeText(copyText);
+                        playBeepSound();
+                      }}
+                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none border border-slate-250"
+                    >
+                      📋 Copy Card Credentials
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsBadgeOpen(false);
+                        setIsScannerOpen(true);
+                      }}
+                      className="w-full py-2 bg-gradient-to-r from-emerald-800 to-[#0a5f6a] text-white hover:opacity-90 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none"
+                    >
+                      📸 Test Scanner Simulator
+                    </button>
+                  </div>
+
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
