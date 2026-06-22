@@ -168,7 +168,7 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden pb-4 gap-3" style={{ height: "475.25px" }}>
+    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden pb-[5px] gap-3">
       
       {/* Short Dynamic Broadcast banner (Announcements Section in Feed) */}
       <div className="shrink-0 bg-amber-50 rounded-2xl border border-amber-200/80 p-3 flex gap-2.5 items-start">
@@ -276,9 +276,10 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
         </AnimatePresence>
 
         {/* FEED POSTS LIST */}
-        {posts
-          .filter(post => post.isApproved !== false)
-          .map((post) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          {posts
+            .filter(post => post.isApproved !== false)
+            .map((post) => {
           const hasComments = commentsByPost[post.id] && commentsByPost[post.id].length > 0;
           const commentsCount = commentsByPost[post.id] ? commentsByPost[post.id].length : 0;
           const isCommenting = activeCommentPostId === post.id;
@@ -435,6 +436,7 @@ export default function HomeTab({ userName = "Guest", userRole = "Attendee" }: {
             </div>
           );
         })}
+        </div>
 
       </div>
     </div>

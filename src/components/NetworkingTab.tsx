@@ -241,7 +241,8 @@ export default function NetworkingTab({
             <div className="space-y-3">
               <h4 className="text-[10px] font-black tracking-wider uppercase text-slate-400">Top 3 Suggested B2B Exhibitor Partnerships</h4>
               
-              {matchResult?.recommendedExhibitors && matchResult.recommendedExhibitors.map((rec: RecommendedExhibitor, idx: number) => {
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {matchResult?.recommendedExhibitors && matchResult.recommendedExhibitors.map((rec: RecommendedExhibitor, idx: number) => {
                 const colors = idx === 0 ? "border-amber-400 ring-2 ring-amber-400/5 bg-amber-50/50" : "border-slate-200/60 bg-white";
                 const badgeColor = idx === 0 ? "bg-amber-400 text-amber-950" : "bg-emerald-50 text-emerald-800";
                 const isChating = activeChatExhibitorId === rec.exhibitorId;
@@ -346,6 +347,7 @@ export default function NetworkingTab({
                   </motion.div>
                 );
               })}
+              </div>
             </div>
 
             <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 flex justify-between items-center text-[10px] text-slate-500 font-bold">

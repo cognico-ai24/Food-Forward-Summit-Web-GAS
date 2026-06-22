@@ -1063,7 +1063,7 @@ export default function MenuTab({
         <div className="bg-white rounded-2xl border border-slate-205 p-3.5 shadow-sm space-y-3 text-left">
           <div className="flex items-center gap-1.5 pb-2 border-b border-slate-100">
             <BarChart size={13} className="text-slate-900" />
-            <h3 className="text-xs font-black text-slate-950 uppercase tracking-tight">Milano check-in telemetry</h3>
+            <h3 className="text-xs font-black text-slate-950 uppercase tracking-tight">Summit check-in telemetry</h3>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

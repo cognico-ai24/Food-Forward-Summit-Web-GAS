@@ -406,7 +406,8 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
             <p className="text-slate-400 text-xs font-semibold">No specialized events in this track.</p>
           </div>
         ) : (
-          filteredSessions.map((session: AgendaSession) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {filteredSessions.map((session: AgendaSession) => {
             const isBookmarked = bookmarkedIds.includes(session.id);
             const isExpanded = expandedSessionId === session.id;
 
@@ -531,7 +532,8 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
                 </AnimatePresence>
               </motion.div>
             );
-          })
+          })}
+          </div>
         )}
       </div>
     </div>

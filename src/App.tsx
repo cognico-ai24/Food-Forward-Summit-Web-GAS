@@ -238,10 +238,12 @@ export default function App() {
   );
 
   return (
-    <div className="h-screen w-screen bg-[#070b0e] text-slate-900 font-sans flex items-center justify-center overflow-hidden">
+    <div className={`h-screen w-screen text-slate-900 font-sans flex items-center justify-center overflow-hidden transition-colors duration-300 ${
+      isDarkMode ? "bg-[#060d17]" : "bg-[#f0f2f5]"
+    }`}>
       
-      {/* Outer Mobile Mock Container Frame mimicking Facebook's compact, premium aesthetic */}
-      <div className={`w-full max-w-md h-full max-h-[100dvh] sm:h-[840px] sm:max-h-[90vh] flex flex-col relative shadow-2xl sm:rounded-[36px] overflow-hidden border border-slate-800 transition-colors duration-300 ${
+      {/* Outer Mock Container Frame - beautifully adapted for mobile, tablet, and desktop viewports */}
+      <div className={`w-full h-full lg:max-w-4xl lg:h-[880px] lg:max-h-[94vh] flex flex-col relative lg:shadow-2xl lg:rounded-[32px] overflow-hidden lg:border border-slate-800 transition-colors duration-300 ${
         isDarkMode ? "dark-theme bg-[#060d17]" : "bg-[#f0f2f5]"
       }`}>
         
@@ -344,7 +346,7 @@ export default function App() {
         </div>
 
         {/* PRIMARY WINDOW CONTENT PORT - scrollable internal tabs */}
-        <main className="flex-1 overflow-hidden px-4.5 pt-3.5 pb-24 flex flex-col min-h-0 bg-[#f0f2f5]">
+        <main className="flex-1 overflow-hidden px-4.5 pt-3.5 pb-[70px] flex flex-col min-h-0 bg-[#f0f2f5]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
