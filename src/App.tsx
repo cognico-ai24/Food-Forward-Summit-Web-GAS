@@ -283,7 +283,7 @@ export default function App() {
     }`}>
       
       {/* Outer Mock Container Frame - beautifully adapted for mobile, tablet, and desktop viewports */}
-      <div className={`w-full h-full lg:max-w-4xl lg:h-[880px] lg:max-h-[94vh] flex flex-col relative lg:shadow-2xl lg:rounded-[32px] overflow-hidden lg:border border-slate-800 transition-colors duration-300 ${
+      <div className={`w-full h-full xl:max-w-4xl xl:h-[880px] xl:max-h-[94vh] flex flex-col relative xl:shadow-2xl xl:rounded-[32px] overflow-hidden xl:border border-slate-800 transition-colors duration-300 ${
         isDarkMode ? "dark-theme bg-[#060d17]" : "bg-[#f0f2f5]"
       }`}>
         
@@ -396,7 +396,7 @@ export default function App() {
         </div>
 
         {/* PRIMARY WINDOW CONTENT PORT - scrollable internal tabs */}
-        <main className="flex-1 overflow-hidden px-4.5 pt-3.5 pb-[70px] flex flex-col min-h-0 bg-[#f0f2f5]">
+        <main className="flex-1 overflow-hidden pl-[5px] pt-[5px] pr-[5px] pb-[70px] flex flex-col min-h-0 bg-[#f0f2f5]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -406,51 +406,61 @@ export default function App() {
               transition={{ duration: 0.14 }}
               className="flex-1 flex flex-col min-h-0"
             >
-              {activeTab === "home" && (
-                <HomeTab 
-                  userName={userSession?.displayName || "Experimental Guest"} 
-                  userRole={currentUserRole} 
-                />
-              )}
+              <div 
+                className="flex-1 flex flex-col min-h-0" 
+                style={{ paddingBottom: '2px' }}
+              >
+                <div 
+                  className="flex-1 flex flex-col min-h-0" 
+                  style={{ paddingBottom: '2px' }}
+                >
+                  {activeTab === "home" && (
+                    <HomeTab 
+                      userName={userSession?.displayName || "Experimental Guest"} 
+                      userRole={currentUserRole} 
+                    />
+                  )}
 
-              {activeTab === "schedule" && (
-                <ScheduleTab 
-                  bookmarkedIds={bookmarkedSessionIds} 
-                  onToggleBookmark={toggleBookmark} 
-                  userRole={currentUserRole}
-                />
-              )}
+                  {activeTab === "schedule" && (
+                    <ScheduleTab 
+                      bookmarkedIds={bookmarkedSessionIds} 
+                      onToggleBookmark={toggleBookmark} 
+                      userRole={currentUserRole}
+                    />
+                  )}
 
-              {activeTab === "networking" && (
-                currentUserRole === "Admin" ? (
-                  <ExhibitorsAdminTab 
-                    exhibitors={exhibitors} 
-                    onUpdateExhibitors={setExhibitors} 
-                  />
-                ) : (
-                  <NetworkingTab 
-                    userName={userSession?.displayName} 
-                    userCompany={userSession?.profile?.brandsRepresented || "Food Forward"} 
-                    userRole={currentUserRole}
-                  />
-                )
-              )}
+                  {activeTab === "networking" && (
+                    currentUserRole === "Admin" ? (
+                      <ExhibitorsAdminTab 
+                        exhibitors={exhibitors} 
+                        onUpdateExhibitors={setExhibitors} 
+                      />
+                    ) : (
+                      <NetworkingTab 
+                        userName={userSession?.displayName} 
+                        userCompany={userSession?.profile?.brandsRepresented || "Food Forward"} 
+                        userRole={currentUserRole}
+                      />
+                    )
+                  )}
 
-              {activeTab === "exhibitors" && (
-                currentUserRole === "Admin" ? <AttendeeTab /> : <ExhibitorTab exhibitors={exhibitors} />
-              )}
+                  {activeTab === "exhibitors" && (
+                    currentUserRole === "Admin" ? <AttendeeTab /> : <ExhibitorTab exhibitors={exhibitors} />
+                  )}
 
-              {activeTab === "menu" && (
-                <MenuTab 
-                  currentUserRole={currentUserRole}
-                  onRoleOverride={handleRoleOverride}
-                  scannedContacts={scannedContacts}
-                  onUpdateScannedContact={handleUpdateScannedContact}
-                  userName={userSession?.displayName}
-                  userEmail={userSession?.email}
-                  userSession={userSession}
-                />
-              )}
+                  {activeTab === "menu" && (
+                    <MenuTab 
+                      currentUserRole={currentUserRole}
+                      onRoleOverride={handleRoleOverride}
+                      scannedContacts={scannedContacts}
+                      onUpdateScannedContact={handleUpdateScannedContact}
+                      userName={userSession?.displayName}
+                      userEmail={userSession?.email}
+                      userSession={userSession}
+                    />
+                  )}
+                </div>
+              </div>
             </motion.div>
           </AnimatePresence>
         </main>
