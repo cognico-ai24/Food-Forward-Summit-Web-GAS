@@ -910,13 +910,13 @@ export default function App() {
               id="my_qr_badge_modal"
             >
               <motion.div 
-                className="w-full max-w-[340px] bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-2xl flex flex-col text-slate-900 animate-fadeIn"
+                className="w-full max-w-[344px] max-h-[88vh] bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-2xl flex flex-col text-slate-900 animate-fadeIn"
                 initial={{ scale: 0.95, y: 15 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 15 }}
               >
                 {/* Header box with green theme accent representing B2B agrarian/green economy axes */}
-                <div className="bg-[#091b2e] text-white p-3.5 border-b border-slate-800 flex justify-between items-center">
+                <div className="bg-[#091b2e] text-white p-3.5 border-b border-slate-800 flex justify-between items-center shrink-0">
                   <div className="flex items-center gap-1.5">
                     <Contact size={14} className="text-[#10b981]" />
                     <span className="text-[9.5px] font-black uppercase tracking-widest text-[#10b981]">FFS Digital Badge</span>
@@ -929,7 +929,7 @@ export default function App() {
                   </button>
                 </div>
 
-                <div className="p-5 flex-grow space-y-4 text-center">
+                <div className="p-5 overflow-y-auto flex-1 space-y-4 text-center scrollbar-thin">
                   {/* Badge Physical Frame Mockup */}
                   <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3.5 shadow-sm relative overflow-hidden">
                     {/* Top colored status pill - Forest Green/Maritime Blue gradient */}
@@ -973,6 +973,52 @@ export default function App() {
                     Present this digital QR badge code at any sponsor table or networking terminal to instantly sync and share your business profile contact credentials.
                   </p>
 
+                  {/* Recently Scanned By Section */}
+                  <div className="border-t border-slate-100 pt-3.5 text-left">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[9.5px] font-black uppercase tracking-wider text-[#0a5f6a] flex items-center gap-1">
+                        <Users size={11} className="text-[#10b981]" />
+                        Recently Scanned By ({scannedContacts.length})
+                      </span>
+                      <span className="text-[7.5px] font-mono font-extrabold px-1.5 bg-slate-100 text-slate-500 rounded uppercase">Live Sync</span>
+                    </div>
+
+                    {scannedContacts.length === 0 ? (
+                      <div className="bg-slate-50 rounded-xl p-3 border border-dashed border-slate-200 text-center">
+                        <p className="text-[9px] text-slate-400 font-semibold leading-relaxed">
+                          Your badge has not been captured yet. Present your QR code to other delegates to initiate a sync!
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
+                        {scannedContacts.map((contact) => (
+                          <div 
+                            key={contact.id} 
+                            className="flex items-center justify-between bg-slate-50 hover:bg-emerald-50/50 p-2 rounded-xl border border-slate-100 transition duration-150"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-6.5 h-6.5 rounded-full bg-[#0a5f6a]/10 border border-[#0a5f6a]/20 flex items-center justify-center text-[#0a5f6a] font-black text-[9.5px] shrink-0">
+                                {contact.name.charAt(0)}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-[10px] font-black text-slate-900 truncate leading-tight">{contact.name}</p>
+                                <p className="text-[8px] text-[#0a5f6a] font-extrabold uppercase tracking-wider truncate leading-none mt-0.5">{contact.company}</p>
+                              </div>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-[7.5px] font-mono font-bold text-slate-400">
+                                {new Date(contact.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              <div className="text-[7px] px-1 py-0.2 bg-emerald-100/75 text-emerald-800 font-extrabold rounded uppercase tracking-wide mt-0.5">
+                                Synced
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Actions Hub */}
                   <div className="space-y-2 pt-1.5">
                     <button
@@ -981,7 +1027,7 @@ export default function App() {
                         navigator.clipboard.writeText(copyText);
                         playBeepSound();
                       }}
-                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none border border-slate-250"
+                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none border border-slate-250 cursor-pointer"
                     >
                       📋 Copy Card Credentials
                     </button>
@@ -991,7 +1037,7 @@ export default function App() {
                         setIsBadgeOpen(false);
                         setIsScannerOpen(true);
                       }}
-                      className="w-full py-2 bg-gradient-to-r from-emerald-800 to-[#0a5f6a] text-white hover:opacity-90 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none"
+                      className="w-full py-2 bg-gradient-to-r from-emerald-800 to-[#0a5f6a] text-white hover:opacity-90 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer select-none cursor-pointer"
                     >
                       📸 Test Scanner Simulator
                     </button>

@@ -49,15 +49,23 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       { id: "admin", name: "System Admin", email: "admin@nleats.com", title: "Milano Summit Core Administrator" }
     ],
     exhibitors: [
-      { id: "feb8a00c-839e-4412-80c8-2e76765a1014", name: "CogniCo (Sponsor)", code: "feb8a00c..." },
-      { id: "f4f09cb2-c7c0-49c0-b776-225ee4155cdb", name: "Food Forward", code: "f4f09cb2..." },
-      { id: "9da28dbe-3b1e-4e60-834e-69e13f2ecf9c", name: "Cognico_test", code: "9da28dbe..." }
+      { id: "e1160788-009e-4db2-a61c-a134bfd84634", name: "Test Org", code: "e1160788...", email: "test@nleats.com", title: "Sustainable Tech Implementation" },
+      { id: "f4f09cb2-c7c0-49c0-b776-225ee4155cdb", name: "Food Forward", code: "f4f09cb2...", email: "forward@nleats.com", title: "Next-gen Snack Sourcing" },
+      { id: "9da28dbe-3b1e-4e60-834e-69e13f2ecf9c", name: "Cognico_test", code: "9da28dbe...", email: "admin@cognico.ca", title: "Smart Temperature Cold-chains" }
     ],
     speakers: [
-      { id: "884384d3-2093-41e2-8b7f-8299e0ba4615", name: "Alexander Kappes", title: "Livestock Technology Sponsor" },
-      { id: "ad67408c-15ad-4164-b4f0-45a68dbba69d", name: "Ashley Nicholls", title: "REACH Agriculture Strats" },
-      { id: "33f4effc-14e6-4774-b2ea-0fc72d07c670", name: "Julie Francoeur", title: "CEO Fairtrade Canada" },
-      { id: "89302393-6920-41df-a3b6-61ad346830c2", name: "Meifan Shi", title: "Waterpoint Lane VC" }
+      { id: "884384d3-2093-41e2-8b7f-8299e0ba4615", name: "Alexander Kappes", title: "Livestock Technology Sponsor", email: "a.m.kappes@gmail.com" },
+      { id: "ad67408c-15ad-4164-b4f0-45a68dbba69d", name: "Ashley Nicholls", title: "REACH Agriculture Strats", email: "ashley@reachag.ca" },
+      { id: "33f4effc-14e6-4774-b2ea-0fc72d07c670", name: "Julie Francoeur", title: "CEO Fairtrade Canada", email: "communications@fairtrade.ca" },
+      { id: "89302393-6920-41df-a3b6-61ad346830c2", name: "Meifan Shi", title: "Waterpoint Lane VC", email: "meifan@waterpointlane.com" }
+    ],
+    sponsors: [
+      { id: "feb8a00c-839e-4412-80c8-2e76765a1014", name: "CogniCo (Sponsor)", code: "feb8a00c...", email: "cognico@nleats.com", title: "AI-Consulting for modern food systems" },
+      { id: "a25039f3-89ea-4c22-b5e1-9ea403ef8839", name: "Nestle Premium Sourcing (Sponsor)", code: "a25039f3...", email: "sourcing@nestle-corp.com", title: "Direct farm sourcing network" }
+    ],
+    attendees: [
+      { id: "9b3292fe-43dc-45cc-bf67-37c2a71f005b", name: "Sandro Galli (Attendee)", code: "9b3292fe...", email: "s.galli@foodagri.it", title: "Specialized Soil & Agronomy" },
+      { id: "5ced99b2-32a8-4ebd-94c0-fe3910cbe772", name: "Elena Rossi (Attendee)", code: "5ced99b2...", email: "e.rossi@milanofood.org", title: "B2B Agrarian Policy Advisory" }
     ]
   };
 
@@ -463,7 +471,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               </div>
 
               {/* SECTION 2: EXHIBITORS */}
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-1">
                   <Globe size={10} className="text-[#0e8bd0]" />
                   <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
@@ -474,19 +482,92 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
                   {sampleCredentials.exhibitors.map((e) => (
                     <div 
                       key={e.id}
-                      onClick={() => handleCopy(e.id)}
+                      onClick={() => handleCopy(e.id, e.email)}
                       className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
                     >
                       <div className="truncate pr-2">
                         <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
                           {e.name}
                         </span>
-                        <span className="text-[8.5px] font-mono font-bold text-slate-600 block group-hover:text-slate-400">
+                        <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
+                          {e.title} ({e.email})
+                        </span>
+                        <span className="text-[7px] font-mono font-bold text-slate-600 block group-hover:text-slate-400">
                           Universal UUID: {e.code}
                         </span>
                       </div>
                       <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
                         {copiedId === e.id ? <Check size={8} /> : <Copy size={8} />}
+                        <span>Select</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION 3: SPONSORS */}
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-1">
+                  <Briefcase size={10} className="text-[#21c3ce]" />
+                  <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
+                    Pre-registered Sponsors (B2B Partners)
+                  </h4>
+                </div>
+                <div className="space-y-1.5">
+                  {sampleCredentials.sponsors.map((sp) => (
+                    <div 
+                      key={sp.id}
+                      onClick={() => handleCopy(sp.id, sp.email)}
+                      className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                    >
+                      <div className="truncate pr-2">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
+                          {sp.name}
+                        </span>
+                        <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
+                          {sp.title} ({sp.email})
+                        </span>
+                        <span className="text-[7px] font-mono font-bold text-slate-600 block group-hover:text-slate-400">
+                          Sponsor UUID: {sp.code}
+                        </span>
+                      </div>
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
+                        {copiedId === sp.id ? <Check size={8} /> : <Copy size={8} />}
+                        <span>Select</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION 4: ATTENDEES */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1">
+                  <Users size={10} className="text-[#10b981]" />
+                  <h4 className="text-[9px] font-black tracking-wider uppercase text-slate-300">
+                    Pre-registered Attendees (Milano Delegates)
+                  </h4>
+                </div>
+                <div className="space-y-1.5">
+                  {sampleCredentials.attendees.map((at) => (
+                    <div 
+                      key={at.id}
+                      onClick={() => handleCopy(at.id, at.email)}
+                      className="p-2 border border-slate-800 hover:border-[#0e8bd0]/40 hover:bg-[#0a1523] rounded-xl flex justify-between items-center bg-[#040c11] cursor-pointer transition group"
+                    >
+                      <div className="truncate pr-2">
+                        <span className="text-[10px] font-bold text-white block group-hover:text-[#0e8bd0]">
+                          {at.name}
+                        </span>
+                        <span className="text-[8.5px] text-slate-500 block truncate group-hover:text-slate-400">
+                          {at.title} ({at.email})
+                        </span>
+                        <span className="text-[7px] font-mono font-bold text-slate-600 block group-hover:text-slate-400">
+                          Attendee UUID: {at.code}
+                        </span>
+                      </div>
+                      <button className="p-1 px-1.5 text-[8px] font-extrabold bg-[#21c3ce] text-[#0a1523] rounded-md group-hover:bg-[#0e8bd0] group-hover:text-white transition shrink-0 flex items-center gap-1">
+                        {copiedId === at.id ? <Check size={8} /> : <Copy size={8} />}
                         <span>Select</span>
                       </button>
                     </div>

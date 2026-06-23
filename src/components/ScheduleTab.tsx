@@ -46,6 +46,7 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
   });
 
   const [selectedTrack, setSelectedTrack] = useState<string>("All");
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [language, setLanguage] = useState<"EN" | "FR">("EN");
 
@@ -71,9 +72,9 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
   const tracks = ["All", "Tech & Innovation", "Sustainability & Packaging", "Supply Chain & Automation", "Consumer & Regulatory"];
 
   // Filter sessions
-  const filteredSessions = selectedTrack === "All"
-    ? sessions
-    : sessions.filter(s => s.track === selectedTrack);
+  const filteredSessions = showBookmarkedOnly
+    ? sessions.filter(s => bookmarkedIds.includes(s.id))
+    : (selectedTrack === "All" ? sessions : sessions.filter(s => s.track === selectedTrack));
 
   const toggleExpand = (id: string) => {
     setExpandedSessionId(prev => (prev === id ? null : id));
@@ -205,6 +206,45 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
           <span>Sync Calendar (.ics)</span>
         </button>
       </div>
+
+      {/* ATTENDEE PORTAL: MY SCHEDULE VS FULL AGENDA SEGMENT CONTROL */}
+      {!isAdmin && (
+        <div className="shrink-0 flex bg-white p-1 rounded-xl border border-slate-200/60 shadow-sm">
+          <button
+            onClick={() => setShowBookmarkedOnly(false)}
+            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer select-none ${
+              !showBookmarkedOnly 
+                ? "bg-[#091b2e] text-white shadow-md font-black"
+                : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-bold"
+            }`}
+          >
+            <span>📅 Full Summit Agenda</span>
+            <span className={`text-[8px] font-mono px-2 py-0.5 rounded-full ${!showBookmarkedOnly ? "bg-[#10b981] text-emerald-950 font-extrabold" : "bg-slate-100 text-slate-500"}`}>
+              {sessions.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setShowBookmarkedOnly(true)}
+            className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer select-none ${
+              showBookmarkedOnly 
+                ? "bg-gradient-to-r from-emerald-800 to-[#0a5f6a] text-white shadow-md font-black"
+                : "text-slate-500 hover:text-slate-200 hover:bg-slate-50 font-bold"
+            }`}
+          >
+            <Bookmark size={11} fill={bookmarkedIds.length > 0 ? "currentColor" : "none"} className={bookmarkedIds.length > 0 ? "text-amber-400" : ""} />
+            <span>My Itinerary</span>
+            {bookmarkedIds.length > 0 ? (
+              <span className={`text-[8px] font-mono px-2 py-0.5 rounded-full font-extrabold bg-[#10b981] text-emerald-950`}>
+                {bookmarkedIds.length}
+              </span>
+            ) : (
+              <span className="text-[8px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                0
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* ADMIN REQ: CONFIGURE AGENDA SESSIONS PANEL */}
       {isAdmin && (
@@ -380,36 +420,59 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
       )}
 
       {/* Track Pill Filter Scroll View */}
-      <div className="shrink-0 bg-slate-100 py-1.5 -mx-5 px-5 overflow-x-auto scrollbar-none flex gap-2 animate-none">
-        {tracks.map((track) => {
-          const isActive = selectedTrack === track;
-          return (
-            <button
-              key={track}
-              onClick={() => setSelectedTrack(track)}
-              className={`whitespace-nowrap px-3.5 py-1.5 text-[9.5px] font-black uppercase tracking-wider rounded-full transition-all duration-150 cursor-pointer ${
-                isActive
-                  ? "bg-emerald-900 text-white shadow-sm"
-                  : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200/50"
-              }`}
-            >
-              {track}
-            </button>
-          );
-        })}
-      </div>
+      {!showBookmarkedOnly && (
+        <div className="shrink-0 bg-slate-100 py-1.5 -mx-5 px-5 overflow-x-auto scrollbar-none flex gap-2 animate-none">
+          {tracks.map((track) => {
+            const isActive = selectedTrack === track;
+            return (
+              <button
+                key={track}
+                onClick={() => setSelectedTrack(track)}
+                className={`whitespace-nowrap px-3.5 py-1.5 text-[9.5px] font-black uppercase tracking-wider rounded-full transition-all duration-150 cursor-pointer ${
+                  isActive
+                    ? "bg-emerald-900 text-white shadow-sm"
+                    : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200/50"
+                }`}
+              >
+                {track}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Interactive Timeline Feed */}
       <div className="flex-grow overflow-y-auto pr-0.5 space-y-2.5 pb-2 scrollbar-thin">
         {filteredSessions.length === 0 ? (
-          <div className="text-center py-10 bg-white rounded-2xl border border-slate-200/50">
-            <p className="text-slate-400 text-xs font-semibold">No specialized events in this track.</p>
-          </div>
+          showBookmarkedOnly ? (
+            <div className="text-center py-12 px-6 bg-white rounded-3xl border border-dashed border-slate-250 shadow-sm space-y-4 max-w-sm mx-auto my-6">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center mx-auto shadow-inner">
+                <Bookmark size={20} className="text-emerald-700" />
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="text-xs font-black uppercase text-slate-800 tracking-wider">No Bookmarked Sessions</h4>
+                <p className="text-[10px] text-slate-500 font-bold max-w-[260px] mx-auto leading-relaxed">
+                  Build your personalized summit itinerary by clicking the bookmark flag on any presentation card!
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowBookmarkedOnly(false)}
+                className="px-5 py-2 bg-gradient-to-r from-emerald-800 to-[#0a5f6a] hover:opacity-95 text-white text-[9.5px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer shadow-md active:scale-95 mx-auto block"
+              >
+                Browse Full Agenda
+              </button>
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-white rounded-2xl border border-slate-200/50">
+              <p className="text-slate-400 text-xs font-semibold">No specialized events in this track.</p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredSessions.map((session: AgendaSession) => {
             const isBookmarked = bookmarkedIds.includes(session.id);
             const isExpanded = expandedSessionId === session.id;
+            const hasConflict = isBookmarked && sessions.some(s => s.id !== session.id && bookmarkedIds.includes(s.id) && s.startTime === session.startTime);
 
             // Translated components if French requested
             const displayTitle = language === "FR" && frTranslations[session.title] 
@@ -437,9 +500,17 @@ export default function ScheduleTab({ bookmarkedIds, onToggleBookmark, userRole 
                 >
                   <div className="space-y-1 flex-1 pr-2">
                     {/* Time Frame Badge */}
-                    <div className="flex items-center gap-1 text-slate-400 font-mono text-[9px] font-extrabold">
-                      <Clock size={10} className="text-emerald-700" />
-                      <span>{session.startTime} - {session.endTime}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-slate-400 font-mono text-[9px] font-extrabold">
+                        <Clock size={10} className="text-emerald-700" />
+                        <span>{session.startTime} - {session.endTime}</span>
+                      </div>
+                      {hasConflict && (
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-50 border border-rose-200 text-rose-700 text-[8px] font-black uppercase tracking-wider animate-pulse select-none shrink-0">
+                          <AlertTriangle size={8} />
+                          <span>Slot Clash</span>
+                        </div>
+                      )}
                     </div>
 
                     <h4 className="text-xs sm:text-sm font-extrabold text-slate-950 leading-snug">
